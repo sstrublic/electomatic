@@ -39,16 +39,12 @@ def allowed_file(filename):
 
 # Export data versions.
 # 1 - original
-# 2 - Change entry 'color' to 'extra'
-# 3 - Add 'acceptvotes' to entries
-# 4 - Add single choice voting
-# 5 - Add entry attendance and awards
-EXPORT_VERSION = 5
+EXPORT_VERSION = 1
 
 # All sheets to import/export.  This and SHEET_KEYS must be kept in sync to ensure data are processed correctly.
 # This will have one entry per version.  Index 0 is empty.
 ALL_SHEETS = [ [],
-               ['events', 'vote_ballotid', 'judges']
+               ['events', 'vote_ballotid']
              ]
 
 # Keys per sheet that we expect if the sheet is present.
@@ -109,16 +105,8 @@ def exportData(user):
             if fetchresults is not False:
                 fetchresults = True
 
-            fetchimages = request.values.get('images', False)
-            if fetchimages is not False:
-                fetchimages = True
-
             # Export the data to an excel file.  This will raise an exception upon failure.
             filepath, filename = buildExportFile(user, fetchresults)
-
-            # If requested, fetch the photos and images as a ZIP file in the same location.
-            if fetchimages is True:
-                imagefilepath, imagefilename = fetchImages(user)
 
         current_user.logger.info("Exporting data: Operation completed")
 
@@ -200,7 +188,7 @@ def buildExportFile(user, fetchresults):
         # Read all class, entry, and vote data.
         outsql = []
 
-        # Fetch app config data.  We can only save the app title, not the photos.
+        # Fetch app config data.  We can only save the app title.
         outsql.append('''SELECT *
                          FROM events
                          WHERE clubid='%d' AND eventid='%d';
@@ -267,32 +255,6 @@ def buildExportFile(user, fetchresults):
 
     except Exception as e:
         raise
-
-
-# Fetch system photos and images.
-def fetchImages(user):
-    event = current_user.event
-
-    imagesfilename = 'bom_event_export_images_%s_%s_%s.zip' % (user, event.clubid, event.eventid)
-
-    current_user.logger.info("Exporting event data: Backing up images", indent=1, propagate=True)
-
-    # Build a ZIP file by taking the system photos folder and the system icon and homeimage,
-    # and building a directory structure that includes them into the file.
-    export_folder = os.path.join(os.getcwd(), app.config.get('EXPORT_DOWNLOAD_FOLDER'))
-
-    images_root_folder = os.path.join(os.getcwd(), app.config.get('IMAGES_UPLOAD_FOLDER'), str(event.clubid), str(event.eventid))
-
-    # Add all files in the photos directory.
-    with zipfile.ZipFile(os.path.join(export_folder, imagesfilename), 'w', zipfile.ZIP_DEFLATED) as zip:
-        # Add files from the images folder..
-        current_user.logger.debug("Exporting event data: Backing up image files to '%s'" % imagesfilename, indent=1)
-        for (dirpath, _, filenames) in os.walk(images_root_folder):
-            relpath = dirpath.replace(images_root_folder, '').lstrip(os.sep)
-            for f in filenames:
-                zip.write(os.path.join(dirpath, f), os.path.join(relpath, f))
-
-    return url_for('main_bp.exportfile', filename=imagesfilename), imagesfilename
 
 
 # Reset to factory defaults.
@@ -1245,7 +1207,7 @@ def importValidatedData(data, validationdata, user):
         # Assign that to the ballot ID.
         vote_ballotid = [{'ballotid': str(max_ballotid)}]
 
-    # If we couldn't associate all entries with registrants and judges, stop.
+    # If an error occurred, stop.
     if len(errors) > 0:
         current_user.logger.flashlog("Event Data Import failure", "Data import failed:", highlight=True, large=True)
 

@@ -543,16 +543,6 @@ input {
     font-size: 24px;
 }
 
-input.clubid {
-    margin-bottom: 2px;
-    width: 100px;
-}
-
-input.title {
-    margin-bottom: 2px;
-    width: 400px;
-}
-
 /* Messages */
 p.errormessage {
     font-weight: bold;
@@ -688,7 +678,7 @@ select.user {
     margin-bottom: 2px;
 }
 
-span.user {
+span.user, span.events {
     font-size: 24px;
 }
 
@@ -705,14 +695,23 @@ input.user-password-disabled {
     border: none;
 }
 
-
-.table-clubs-info, .users-action {
-    text-align: center;
-    width: 80px;
+input.clubid, input.eventid {
+    margin-bottom: 2px;
+    width: 100px;
 }
 
-.table-clubs-desc {
-    min-width: 250px;
+input.title {
+    margin-bottom: 2px;
+    width: 400px;
+}
+
+.table-clubs-info, .table-events-info, .users-action {
+    text-align: center;
+    width: 100px;
+}
+
+.table-clubs-desc, .table-events-desc {
+    min-width: 300px;
 }
 
 .grid-header {
@@ -742,7 +741,7 @@ input.clubdesc {
     width: 400px;
 }
 
-label.user, label.club, label.eventtitle {
+label.search, label.user, label.club, label.event, label.eventtitle {
     width: 270px;
 }
 
@@ -750,13 +749,45 @@ label.user, label.club, label.eventtitle {
     width: 120px;
 }
 
-.clubname {
+.clubname, .eventname {
     min-width: 180px;
 }
 
-select.clubid {
+select.clubid, select.eventid {
     font-size: 24px;
     margin-bottom: 2px;
+}
+
+/* Specific to class-vote tables */
+table.clubs td, table.clubs th, table.events td, table.events th {
+    border: 1px solid #ddd;
+    font-size: 20px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    text-align: center;
+}
+
+table.clubs th, table.events th {
+    border: 2px solid black;
+    padding: 2px;
+    padding-top: 2px;
+}
+
+.table-sortbutton {
+    font-size: 16px;
+    background-color:#238360;
+    background: none;
+    padding: 0px;
+    border: none;
+}
+
+.table-sorticon {
+    font-size: 20px;
+    width: 20px;
+}
+
+.table-datetime {
+    min-width: 250px;
 }
 
 /* Note: Design for a width of 768px */
@@ -820,25 +851,6 @@ select.clubid {
         display: inline-block;
     }
 
-    label.user {
-        width: 200px;
-        padding-left: 10px;
-    }
-
-    input.title, input.club {
-        margin-bottom: 2px;
-        width: 400px;
-    }
-
-    input.clubdesc {
-        margin-bottom: 2px;
-        width: 280px;
-    }
-
-    label.club {
-        width: 130px;
-    }
-
     /* Anchors within a page, accounting for fixed header */
     a.anchor {
         display: block;
@@ -886,8 +898,27 @@ select.clubid {
     }
 
     /* Max screen width */
-    .clubs, .users {
+    .clubs, .events, .users {
         width: 99%;
+    }
+
+    label.user {
+        width: 200px;
+        padding-left: 10px;
+    }
+
+    input.title, input.club {
+        margin-bottom: 2px;
+        width: 400px;
+    }
+
+    input.clubdesc {
+        margin-bottom: 2px;
+        width: 280px;
+    }
+
+    label.search, label.club, label.event {
+        width: 130px;
     }
 
     .users-name {
@@ -926,10 +957,6 @@ select.clubid {
     input.gotoline {
         font-size: 16px;
         width: 80px;
-    }
-
-    .clubid {
-        width: 60px;
     }
 
     .checkmark {
@@ -981,7 +1008,7 @@ select.clubid {
     }
 
     table th {
-        font-size: 14px;
+        font-size: 16px;
         padding-top: 6px;
         padding-bottom: 6px;
     }
@@ -1093,14 +1120,46 @@ select.clubid {
         border: none;
     }
 
-    span.user {
+    span.user, span.events {
         font-size: 18px;
     }
 
-    select.clubid {
+    select.clubid, select.eventid {
         font-size: 16px;
         max-width: 300px;
         margin-bottom: 2px;
+    }
+
+    .table-sortbutton {
+        font-size: 16px;
+        background-color:#238360;
+        background: none;
+        padding: 0px;
+        border: none;
+    }
+
+    .table-sorticon {
+        font-size: 20px;
+        width: 20px;
+    }
+
+    .table-datetime {
+        min-width: 200px;
+    }
+
+    .clubid, .eventid {
+        width: 70px;
+    }
+
+    table.clubs td, table.events td, table.clubs th, table.events th {
+        border: 1px solid #ddd;
+        font-size: 16px;
+        padding: 1px;
+        text-align: center;
+    }
+
+    .table-clubs-info, .table-events-info {
+        min-width: 90px;
     }
 }
 
@@ -1333,9 +1392,4 @@ select.clubid {
     a[href]:after {
         display:none;
     }
-
-    .table-clubs-info, .table-clubs-desc {
-        font-size: 12px;
-    }
-
 }

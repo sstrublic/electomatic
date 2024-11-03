@@ -39,7 +39,7 @@
     <div>
         <input type="hidden" id="namesearch" name="clubnamesearch" value="{{search}}">
         {% if events != None %}
-        <table class="judges" align="center">
+        <table class="clubs" align="center">
             <tr>
                 <th class="grid-header clubid">ID</th>
                 <th class="grid-header clubname">Club Name</th>
@@ -58,7 +58,7 @@
     <div>
         <br>
         <label title="The Club ID to remove." for="clubid">Club ID:</label>
-        <select class="judgeid" id="clubid" name="clubid" autofocus>
+        <select class="clubid" id="clubid" name="clubid" autofocus>
             {% for c in clubs %}
             <option value="{{c[0]}}">{{c[0]}}</option>
             {% endfor %}

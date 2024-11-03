@@ -91,16 +91,6 @@ def entryimages(clubid, eventid, filename):
         return send_file(os.path.join(app.config.get('STATIC_FOLDER'), app.config.get('MISSING_IMAGE')) )
 
 
-# Path to photos.
-@main_bp.route('/images/<clubid>/<eventid>/photos/<filename>', methods=['GET', 'POST'])
-def viewphoto(clubid, eventid, filename):
-    # If there are spaces in the filename, convert them to underscores.
-    filename = filename.replace(' ', '_')
-
-    photopath = os.path.join(app.config.get('IMAGES_FOLDER'), str(clubid), str(eventid), app.config.get('PHOTOS_FOLDER'), filename)
-    return send_file(photopath)
-
-
 # Determine where to send people when unauthorized.
 def unauthorized_redirect():
     # For new sessions with no user, we default to 'not found' unless a specific login URL was provided.

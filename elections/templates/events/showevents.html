@@ -1,0 +1,77 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Events List</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <div>
+        {% if eventdata|length == 0 %}
+        <p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Events to display.</span></p>
+        {% else %}
+        <table class="events" align="center">
+            <tr>
+                <th class="table-events-info">Select</th>
+                <th class="table-events-info">ID&nbsp;
+                    <button class="table-sortbutton" id="sortby" name="sortby" value="eventid">
+                        <img class="table-sorticon" src={% if sortby == 'eventid' and sortdir == 'up' %}"{{ url_for('static', filename='sort-91.png') }}" {% else %}"{{ url_for('static', filename='sort-19.png') }}"{% endif %}></img>
+                    </button>
+                </th>
+                <th class="table-classes-desc">Event Name&nbsp;
+                    <button class="table-sortbutton" id="sortby" name="sortby" value="title">
+                        <img class="table-sorticon" src={% if sortby == 'title' and sortdir == 'up' %}"{{ url_for('static', filename='sort-za.png') }}" {% else %}"{{ url_for('static', filename='sort-az.png') }}"{% endif %}></img>
+                    </button>
+                </th>
+                <th class="table-datetime">Event Date/Time&nbsp;
+                    <button class="table-sortbutton" id="sortby" name="sortby" value="eventdatetime">
+                        <img class="table-sorticon" src={% if sortby == 'eventdatetime' and sortdir == 'up' %}"{{ url_for('static', filename='sort-91.png') }}" {% else %}"{{ url_for('static', filename='sort-19.png') }}"{% endif %}></img>
+                    </button>
+                </th>
+                <th class="table-events-info">Locked</th>
+                <th class="table-events-info" colspan="2">Actions</th>
+            </tr>
+
+            <!-- Show each row's data. -->
+            {% for e in eventdata %}
+                <tr>
+                    <td class="table-events-info"><button type="submit" id="select_{{e[1]}}" name="select_{{e[1]}}" value="{{e[1]}}">Select</td>
+                    <td class="table-events-info" title="The Event's ID." style="font-weight:bold;">{{e[1]}}</td>
+                    <td class="table-events-desc" title="The Event's name.">{{e[2]}}</td>
+                    <td class="table-datetime" title="The Event's date and start time.">{{e[3]}}</td>
+                    <td class="table-events-info"><input type="checkbox" id="locked" name="locked" value="True" disabled {% if e[4] == True %} title="The Event is locked (can accept changes)." checked{% endif %}></td>
+                    <td class="table-events-info"><button type="submit" id="view_{{e[1]}}" name="view_{{e[1]}}" value="{{e[1]}}">View</td>
+                    <td class="table-events-info"><button type="submit" id="edit_{{e[1]}}" name="edit_{{e[1]}}" value="{{e[1]}}">Edit</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+<div align="center" style="padding:20px;">
+    <a href="{{ url_for('main_bp.addevent') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Event</button></a>
+    <a href="{{ url_for('main_bp.editevent') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Event</button></a>
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

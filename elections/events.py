@@ -455,32 +455,6 @@ def remove_event_data(user, clubid, eventid, clear_config=True, votes_only=False
             EventConfig._release_events_lock(user)
             return err
 
-        else:
-            # If only clearing votes, keep images.
-            if votes_only is False:
-                # Remove the images and photos.
-                images_folder = os.path.join(os.getcwd(), app.config.get('IMAGES_UPLOAD_FOLDER'), str(clubid), str(eventid))
-
-                photos_folder = os.path.join(images_folder, app.config.get("PHOTOS_FOLDER"))
-                entries_folder = os.path.join(images_folder, app.config.get("ENTRY_IMAGES_FOLDER"))
-
-                folders = [photos_folder, entries_folder]
-
-                # If clearing the config, remove the images folder completely.
-                if clear_config is True:
-                    folders.append(images_folder)
-
-                for f in folders:
-                    try:
-                        current_user.logger.debug("Removing image folder '%s'..." % f, indent=2)
-                        if os.path.exists(f):
-                            shutil.rmtree(f)
-
-                    except Exception as e:
-                        # We will log the error but allow the user to proceed.
-                        current_user.logger.error("Removing event data: Failed to to remove image folder '%s" % f)
-                        pass
-
         EventConfig._release_events_lock(user)
         return None
 

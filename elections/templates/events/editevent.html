@@ -1,0 +1,149 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if eventid != None %}
+<div class="page-content page-content-nopadding">
+{% else %}
+<div class="page-content">
+{% endif %}
+
+<div>
+<h1>
+    <b>Edit Event</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- If no entry yet taken, show this. -->
+    {% if eventid == None and search == None %}
+    <div>
+        <label class="event" title="The Event ID to edit." for="eventid">Event ID:</label>
+        <input class="eventid" type="tel" maxlength="8" id="eventid" name="eventid" \
+               {% if eventid == None %} autofocus {%endif %} \
+               {% if eventid != None %} disabled value="{{eventid}}" {% endif %}>
+        <span style="font-size: 18px;"><b>&nbsp;-OR-</b></span>
+        <br>
+        <label class="search" title="The partial name of the Event to search for (* for all Events)." for="last">Event Name:</label>
+        <input class="search" maxlength="64" id="namesearch" name="namesearch">
+        <div style="padding:10px;">
+            <button type="submit" id="entrybutton" disabled>Submit</button>
+        </div>
+    </div>
+
+    {% elif search != None and eventid == None %}
+    <div>
+        <input type="hidden" id="namesearch" name="eventamesearch" value="{{search}}">
+        {% if events != None %}
+        <table class="events" align="center">
+            <tr>
+                <th class="grid-header eventid">ID</th>
+                <th class="grid-header eventname">Event Name</th>
+            </tr>
+            {% for e in events %}
+            <tr>
+                <td class="grid-item eventid" title="The Event's ID."><b>{{e[0]}}</b></td>
+                <td class="grid-item eventname" title="The Event's name.">{{e[1]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+    <div>
+        <br>
+        <label title="Choose the Event ID to edit." for="eventid">Event ID:</label>
+        <select class="eventid" id="eventid" name="eventid" autofocus>
+            {% for e in events %}
+            <option value="{{e[0]}}">{{e[0]}}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" id="entrybutton">Submit</button>
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+    </div>
+
+    {% else %}
+    <input type="hidden" id="eventid" name="eventid" value="{{eventid}}">
+    <!-- Controls. -->
+    <div class="top-buttons">
+        <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+    </div>
+
+    <div class="button-top-page-content">
+
+        {% include 'messages.html' %}
+
+        <!-- Single-tenancy doesn't need to display the event ID. -->
+        {% if configdata[8] == true %}
+        <p class="infoheader" title="The Event ID to edit.">Event ID: {{eventid}}</p>
+        {% endif %}
+
+        <label class="eventtitle" title="If checked, the Event is locked (cannot accept changes)." for="locked">Locked</label>
+        <input type="checkbox" id="locked" name="locked" value="True" {% if locked == true %}checked{% endif %} autofocus>
+        <br><br>
+
+        <label class="eventtitle" title="The name of the Event to edit." for="title">Event Name</label>
+        <input class="eventtitle" type="text" maxlength="64" id="title" name="title" value="{{title}}"><br><br>
+
+        <label class="eventtitle" title="The Event's date and start time." for="eventdatetime">Event Date/Time</label>
+        <input type="datetime-local" id="eventdatetime" name="eventdatetime" value="{{eventdatetime}}">
+        <br><br><br>
+
+        <p class="infoheader" title="Page and browser image customizations.">Image Customizations</p>
+
+        <!-- Using a table here to give us the alignment we want for the file input buttons-->
+        <table class="config">
+            <tr>
+                <td><label class="eventtitle" title="The icon that will be shown in the browser's tab for this Event." for="icon">Event Icon</label></td>
+
+                {% if icon != None %}
+                <td><img class="configimage" src="{{url_for('main_bp.images', clubid='' + configdata[4], eventid=eventid, filename='' + icon)}}"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+
+                <td><input type="file" id="appfile" name="appfile"accept=".ico" autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td><label class="eventtitle" title="The image that will be shown as the Home button for this Event." for="homeimage">Home Image</label></td>
+
+                {% if homeimage != None %}
+                <td><img class="configimage" src="{{url_for('main_bp.images', clubid='' + configdata[4], eventid=eventid, filename='' + homeimage)}}"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+
+                <td><input type="file" id="homefile" name="homefile" accept=".png,.jpg,.jpeg,.gif" autocomplete="off"></td>
+            </tr>
+        </table>
+
+        <!-- If an event has not been selected (eventid = configdata[5] == 0), show this. -->
+        {% if configdata[5] == '0' %}
+        <div align="center" style="padding:20px;">
+           <button type="submit" id="redirect" name="redirect" value="showevents" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Events</button>
+        </div>
+        <br>
+        {% endif %}
+
+    </div>
+    {% endif %}
+</form>
+
+{% if eventid == None %}
+{% include 'messages.html' %}
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}
