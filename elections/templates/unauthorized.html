@@ -1,0 +1,31 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+<title>500 Unauthorized</title>
+
+<div class="page-content-noheader">
+
+{% block content %}
+
+<div>
+<h2>NOT AUTHORIZED</h2>
+</div>
+
+{% if user in admins or user in voters %}
+<div class="page-interior">
+{% else %}
+<div class="generic-public">
+{% endif %}
+
+<p style="padding-left:20px;">You are not authorized to access this page.</p>
+
+</div>
+
+</div>
+
+{% endblock %}

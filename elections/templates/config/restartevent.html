@@ -1,0 +1,67 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Restart Event</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[13] == False %}
+
+    <div>
+        <br>
+        <p><label>This operation will CLEAR this Event's Votes and Results.</label></p>
+        <p><label>This operation RESTARTS all Event voting.</label></p>
+        <br>
+        <p><label>THIS IS AN IRREVERSIBLE ACTION.</label></p>
+        <br>
+
+        {% if reset_request == False %}
+        <p><label>Click 'Submit' to start the voting restart process.</label></p>
+
+        {% elif confirm_request == False %}
+        <p><label>Click 'Confirm' to confirm the restart should proceed.</label></p>
+
+        {% else %}
+        <p><label>Click 'Restart Event' to RESTART THIS EVENT:</label></p>
+
+        {% endif %}
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+        {% if reset_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="reset">Submit</button>
+        {% elif confirm_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm</button>
+        {% else %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Restart Event</button>
+        {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

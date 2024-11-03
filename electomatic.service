@@ -1,0 +1,23 @@
+[Unit]
+Description=The Elect-O-Matic Application Service
+DefaultDependencies=no
+After=postgresql.service
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Type=simple
+
+User=electomatic
+Group=electomatic
+
+PermissionsStartOnly=true
+
+ExecStart=/apps/electomatic/serve.py
+WorkingDirectory=/apps/electomatic/
+
+TimeoutStartSec=0
+Restart=on-failure
+RemainAfterExit=yes
+RuntimeDirectoryMode=755

@@ -1,0 +1,37 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+{% if messages %}
+<br>
+<div class="message">
+    {% for category, message in messages %}
+    {% if 'error' in category %}
+        {% if 'bold' in category %}
+        <p class="errormessage {% if 'large' in category %}largemessage{% endif %}">{% if 'indent' in category %}&#8702;&nbsp;{%endif %}{{ message }}</p>
+        {% else %}
+        <p class="errormessage-soft">{% if 'indent' in category %}&#8702;&nbsp;{%endif %}{{ message }}</p>
+        {% endif %}
+
+        {% else %}
+        {% if 'bold' in category %}
+        <p class="infomessage {% if 'large' in category %}largemessage{% endif %}">{% if 'indent' in category %}&#8702;&nbsp;{%endif %}{{ message }}</p>
+        {% else %}
+        <p class="infomessage-soft">{% if 'indent' in category %}&#8702;&nbsp;{%endif %}{{ message }}</p>
+        {% endif %}
+    {% endif %}
+
+    {% if 'blank' in category %}
+    <br>
+    {% endif %}
+
+    {% endfor %}
+</div>
+
+{% endif %}
+
+{% endwith %}

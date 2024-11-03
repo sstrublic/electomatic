@@ -1,0 +1,344 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+<!-- Reference:
+version      = configdata[0]
+title        = configdata[1]
+icon         = configdata[2]
+homeimage    = configdata[3]
+clubid       = configdata[4]
+eventid      = configdata[5]
+siteadmin    = configdata[6]
+clubname     = configdata[7]
+tenancy      = configdata[8]
+event_login  = configdata[9]
+public_login = configdata[10]
+clubadmin    = configdata[11]
+event locked = configdata[12]
+-->
+
+<!doctype html>
+<html lang="en">
+    <title>{{configdata[1]}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" media="print" href="{{ url_for('static', filename='print.css') }}">
+
+    {% if configdata[5] != '0' %}
+      <link rel="shortcut icon" href="{{ url_for('main_bp.images', clubid='' + configdata[4], eventid='' + configdata[5], filename='' + configdata[2]) }}">
+    {% elif configdata[4] != '0' %}
+      <link rel="shortcut icon" href="{{ url_for('main_bp.clubimages', clubid='' + configdata[4], filename='' + configdata[2]) }}">
+    {% else %}
+      <link rel="shortcut icon" href="{{ url_for('static', filename='' + configdata[2]) }}">
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+
+    <!-- Got a nice icon from these people. This is the attribution. -->
+    <!-- https://www.flaticon.com/free-icons/prize Prize icons created by Freepik - Flaticon -->
+
+<body>
+
+  <nav class="navbar navbar-fixed-top w3-white w3-border">
+    <div class="navbar-header">
+
+      {% if user != None %}
+
+      {% if user in admins %}
+      <div class="w3-bar-item w3-border-right navbar-brand" style="padding:2px;" title="Display the main page.">
+      {% else %}
+      <div class="w3-bar-item w3-border-right navbar-brand-public" style="padding:2px;" title="Display the main page.">
+      {% endif %}
+
+      <a href="{{ url_for('main_bp.index') }}">
+        {% if configdata[5] != '0' %}
+        <button class="home-button"><img style="float:left; height:34px;" src="{{ url_for('main_bp.images', clubid='' + configdata[4], eventid='' + configdata[5], filename='' + configdata[3]) }}" alt="Home"></button>
+        {% elif configdata[4] != '0' %}
+        <button class="home-button"><img style="float:left; height:34px;" src="{{ url_for('main_bp.clubimages', clubid='' + configdata[4], filename='' + configdata[3]) }}" alt="Home"></button>
+        {% else %}
+        <button class="home-button"><img style="float:left; height:34px;" src="{{ url_for('static', filename='' + configdata[3]) }}" alt="Home"></button>
+        {% endif %}
+      </a>
+      </div>
+
+      <!-- User must be a site or club admin to log in with club or event ID 0. -->
+      {% if configdata[4] == '0' or configdata[5] == '0' %}
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#">
+            <span class="nav-label">Admin</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            {% if configdata[4] == '0' %}
+              <li class="menuitem"><a href="{{ url_for('main_bp.showlog') }}">View System Log</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.clearlogs') }}">Clear System Logs</a></li>
+            {% else %}
+              <li class="menuitem"><a href="{{ url_for('main_bp.showclub') }}">View Club Information</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.editclub') }}">Edit Club Information</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.showlog') }}">View Club Log</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.clearlogs') }}">Clear Club Log</a></li>
+            {% endif %}
+
+              <li class="menuitem"><a href="{{ url_for('main_bp.fetchdocs') }}">System Documentation</a></li>
+          </ul>
+      </ul>
+
+      {% endif %}
+
+      <!-- clubid (configdata[4]) == '0' means we are in site admin mode. -->
+      {% if configdata[4] == '0' %}
+
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a role="button" href="#">
+            <span class="nav-label">Clubs</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+              <li class="menuitem"><a href="{{ url_for('main_bp.addclub') }}">Add Club</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.editclub') }}">Edit Club</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.removeclub') }}">Remove Club</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.showclub') }}">View Club</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.showclubs') }}">View Clubs</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a role="button" href="#">
+            <span class="nav-label">Users</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            <li class="menuitem"><a href="{{ url_for('main_bp.adduser') }}">Add User</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.edituser') }}">Edit User</a></li>
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.removeuser') }}">Remove User</a></li>
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.resetpassword') }}">Reset Password</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.showuser') }}">View User</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.showusers') }}">View Users</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Event ID 0 means an event has not yet been selected. -->
+      {% elif configdata[5] == '0' %}
+
+      <!-- Admins can modify events. -->
+      {% if user in admins %}
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a role="button" href="#">
+            <span class="nav-label">Events</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            <li class="menuitem"><a href="{{ url_for('main_bp.addevent') }}">Add Event</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.editclubevent') }}">Edit Event</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.removeevent') }}">Remove Event</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.showevent') }}">View Event</a></li>
+              <li class="menuitem separator"><a href="{{ url_for('main_bp.showevents') }}">View Events</a></li>
+              <li class="menuitem"><a href="{{ url_for('main_bp.templatefile') }}">Download Template</a></li>
+            </ul>
+        </li>
+      </ul>
+      {% endif %}
+
+      <!-- Admins can create users and change passwords. -->
+      {% if user in admins %}
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a role="button" href="#">
+            <span class="nav-label">Users</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            <li class="menuitem"><a href="{{ url_for('main_bp.adduser') }}">Add User</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.edituser') }}">Edit User</a></li>
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.removeuser') }}">Remove User</a></li>
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.resetpassword') }}">Reset Password</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.showuser') }}">View User</a></li>
+            <li class="menuitem"><a href="{{ url_for('main_bp.showusers') }}">View Users</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% endif %}
+
+      <!-- Site admins can return to the clubs list. -->
+      {% if configdata[6] == true %}
+      <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('main_bp.showclubs', reload=True) }}" class="nav-label" style="margin: -3px;"><img class="menu-icons" src="{{ url_for('static', filename='back-arrow.png') }}"></img> Back to Clubs</a></li>
+      </ul>
+      {% endif %}
+
+      {% else %}
+
+      {% if user in admins %}
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#">
+            <span class="nav-label">Admin</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            <li class="dropdown-submenu menuitem">
+              <a href="#">
+                <span class="menuitem">Events &#9656;</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                <li class="menuitem"><a href="{{ url_for('main_bp.showevent') }}">View Event</a></li>
+                <li class="menuitem"><a href="{{ url_for('main_bp.editevent') }}">Edit Event</a></li>
+                {% if configdata[12] == false %}<li class="menuitem"><a href="{{ url_for('main_bp.restartevent') }}">Restart Event</a></li>{% endif %}
+                <li class="separator">
+
+                <li class="menuitem"><a href="{{ url_for('main_bp.exportdata') }}">Save Event Data</a></li>
+                {% if configdata[12] == false %}<li class="menuitem"><a href="{{ url_for('main_bp.importdata') }}">Load Event Data</a></li>{% endif %}
+                {% if configdata[12] == false %}<li class="menuitem"><a href="{{ url_for('main_bp.resetdata') }}">Clear Event Data</a></li>{% endif %}
+                <li class="separator">
+                <li class="menuitem"><a href="{{ url_for('main_bp.templatefile') }}">Download Template</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown-submenu menuitem">
+              <a href="#">
+                <span class="menuitem">Users &#9656;</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                <!-- an admin in single-tenancy mode can manage users. -->
+                {% if configdata[8] == False %}
+
+                <li class="menuitem"><a href="{{ url_for('main_bp.adduser') }}">Add User</a></li>
+                <li class="menuitem"><a href="{{ url_for('main_bp.edituser') }}">Edit User</a></li>
+                <li class="menuitem separator"><a href="{{ url_for('main_bp.removeuser') }}">Remove User</a></li>
+                <li class="menuitem separator"><a href="{{ url_for('main_bp.resetpassword') }}">Reset Password</a></li>
+                <li class="menuitem"><a href="{{ url_for('main_bp.resetpassword') }}">Reset Password</a></li>
+                <li class="menuitem"><a href="{{ url_for('main_bp.showuser') }}">View User</a></li>
+                <li class="menuitem"><a href="{{ url_for('main_bp.showusers') }}">View Users</a></li>
+
+                {% endif %}
+              </ul>
+            </li>
+
+            <!-- Only Club/Site admins can view / clear the log. -->
+            {% if configdata[11] == True %}
+            {% if configdata[12] == false %}<li class="menuitem"><a href="{{ url_for('main_bp.clearlogs') }}">Clear Event Logs</a></li>{% endif %}
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.showlog') }}">View Event Log</a></li>
+
+            {% else %}
+
+            <!-- Only admins can view the log. -->
+            {% if user in admins %}
+            <li class="menuitem separator"><a href="{{ url_for('main_bp.showlog') }}">View Event Log</a></li>
+            {% endif %}
+
+            {% endif %}
+
+            {% if user in admins %}
+            <li class="menuitem"><a href="{{ url_for('main_bp.fetchdocs') }}">System Documentation</a></li>
+            {% endif %}
+
+            {% endif %}
+
+          </ul>
+
+        </li>
+      </ul>
+      {% endif %}
+
+      <ul class="nav navbar-nav">
+
+        <!-- We hide the logout link when the user logged in via the public (QR) interface. -->
+        {% if configdata[10] == False %}
+
+        <!-- Multi-tenancy off, direct event login or event ID == 0 means log out is the exit option. -->
+        {% if configdata[8] == False or configdata[9] == true or configdata[5] == '0' %}
+        <li><a href="{{ url_for('main_bp.logout') }}" class="nav-label" style="margin: -4px;"><img class="menu-icons" src="{{ url_for('static', filename='logout.png') }}"></img> Log Out</a></li>
+        {% else %}
+        <li><a href="{{ url_for('main_bp.exit') }}" class="nav-label" style="margin: -4px;"><img class="menu-icons" src="{{ url_for('static', filename='logout.png') }}"></img> Exit</a></li>
+        {% endif %}
+
+        {% endif %}
+      </ul>
+
+      {% else %}  <!-- user is not None -->
+
+      <!-- We hide the login links when the user logged in via the public (QR) interface. -->
+      {% if configdata[10] == False %}
+      <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('main_bp.login') }}" class="nav-label" style="margin: -4px;"><img class="menu-icons" src="{{ url_for('static', filename='login.png') }}"></img> Event Login</a></li>
+        <li><a href="{{ url_for('main_bp.clublogin') }}" class="nav-label" style="margin: -4px;"><img class="menu-icons" src="{{ url_for('static', filename='login.png') }}"></img> Club Login</a></li>
+      </ul>
+      {% endif %}
+
+      {% endif %}  <!-- user is not None -->
+    </div>
+  </nav>
+
+  {% if user != None %}
+
+  {% if user in admins %}
+  <div class="top-pad">
+  {% else %}
+  <div class="top-pad-public">
+  {% endif %}
+
+  {% else %}
+  <div class="top-pad-login">
+  {% endif %}
+    <h5>
+      {% if user != None %}
+
+      {% if configdata[4] == '0' %}
+      <b>User:&nbsp;</b>{{user}}<b>&nbsp;&nbsp;Master of the Universe</b>
+      {% elif configdata[5] == '0' %}
+      <b>User:&nbsp;</b>{{user}}<b>&nbsp;&nbsp;Club:&nbsp;{{configdata[4]}}</b>&nbsp;{{configdata[7]}}
+      {% else %}
+
+      {% if configdata[8] == false %}
+      <b>User:&nbsp;</b>{{user}}<b>&nbsp;&nbsp;Event:</b>&nbsp;{{configdata[1]}}
+      {% else %}
+      <b>User:&nbsp;</b>{{user}}
+      <b>&nbsp;&nbsp;Event:&nbsp;</b>
+        <span {% if configdata[12] == true %} style="color:darkred"{% else %}style="color:black"{% endif %}>{{configdata[5]}}</span>
+        <span {% if configdata[12] == true %} style="color:darkred"{% else %}style="color:black"{% endif %}>&nbsp;<b>{{configdata[1]}}</b></span>
+      {% if configdata[12] == true %}&nbsp;<img title="This Event is locked and cannot be modified." style="height:14px; margin-top: -4px;" src="{{url_for('static', filename='locked.png')}}">{% endif %}
+      {% endif %}
+
+      {% endif %}
+
+      {% else %}
+      Not Logged In
+      {% endif %}
+    </h5>
+
+    {% block content %} {% endblock %}
+  </div>
+
+  <footer>
+    <b><span class="appname">Ballot-O-Matic</span></b>
+    <b><span class="w3-tiny attribution"><a href="https://www.flaticon.com/icons" target="_blank" title="Icons by Freepik - Flaticon">Thanks, Flaticon!</a></span></b>
+    <b><span class="w3-tiny copyright">v{{configdata[0]}} &#9400; Steve Strublic</span></b>
+  </footer>
+
+</body>
+
+</html>

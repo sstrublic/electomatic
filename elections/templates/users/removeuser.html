@@ -1,0 +1,111 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Remove User</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <!-- If no entry yet taken, show this. -->
+    {% if username == None %}
+    <div>
+        <label class="user" title="The User's unique username for this Club." for="username">User Name:</label>
+        <input class="user" maxlength="32" id="username" name="username" \
+               {% if username == None %} autofocus {%endif %} \
+               {% if username != None %} disabled value="{{username}}" {% endif %}>
+        <div style="padding:10px;">
+            <button type="submit" id="userbutton" disabled>Submit</button>
+        </div>
+    </div>
+
+    {% else %}
+    <input type="hidden" id="username" name="username" value="{{username}}">
+    <div>
+        <label class="user" title="The User's unique username for this Club." for="username">User Name:</label>
+        <span class="user" >{{username}}</span><br>
+        <label class="user" title="The User's name." for="fullname">Full Name:</label>
+        <span class="user" >{{fullname}}</span><br>
+        <label class="user" title="The User's password (cannot be viewed)." for="passwd">Password:</label>
+        <span class="user" >********</span><br>
+
+        <!-- If a site admin (clubid = configdata[4] == 0), then we don't show this field (it defaults to admin). -->
+        {% if configdata[4] != '0' %}
+        <div>
+            <label class="user" title="The User's access level." for="usertype">User Type:</label>
+            <span class="user" >{{usertype}}</span>
+        </div>
+        {% endif %}
+
+        {% if usertype == 'Public' %}
+        <label class="user" title="The Event to which the Public user is assigned." for="eventid" id="eventidlabel">Event:</label>
+        <span class="user">{{title}}</span><br>
+        {% endif %}
+        <br>
+
+        <!-- This is only accessible for Club administration (Event admins cannot create Club admins) -->
+        {% if configdata[4] != '0' and usertype == 'Admin' %}
+        <label class="user" title="If checked, the User has Club-level administration privileges." for="clubadmin">Club Admin</label>
+        <input type="checkbox" id="clubadmin" name="clubadmin" value="True" disabled
+            {% if clubadmin != None %}
+                {% if clubadmin == True %}checked{% endif %}
+            {% else %}
+                checked
+            {% endif %}
+        >
+        <br>
+        {% endif %}
+
+        <label class="user" title="If checked, the User is active (may log in)." for="active">Active</label>
+        <input type="checkbox" id="active" name="active" value="True" disabled
+            {% if active != None %}
+                {% if active == True %}checked{% endif %}
+            {% else %}
+                checked
+            {% endif %}
+        >
+        <br>
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <br><label>CONFIRM REMOVAL OF THIS USER:</label><br><br>
+
+            {% if confirm_request == false %}
+            <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm Delete</button>
+            {% else %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Delete User</button>
+            {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+
+    {% endif %}
+</form>
+
+{% include 'messages.html' %}
+
+{% if user in admins %}
+<div align="center" style="padding:20px;">
+    <a href="{{ url_for('main_bp.adduser') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add User</button></a>
+    <a href="{{ url_for('main_bp.showusers') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Users</button></a>
+</div>
+<br>
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>User List</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form">
+
+{% if userlist|length == 0 %}
+<p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Users to display.</span></p>
+{% else %}
+
+<!-- Display the entry data. -->
+<table class="users" align="center">
+    <tr>
+        <th class="users-name">User Name</th>
+        <th class="users-fullname">Full Name</th>
+        <th class="users-usertype">User Type</th>
+        <th class="users-active">Active</th>
+        <th class="users-action" colspan="2">Actions</th>
+    </tr>
+
+    <!-- Show each row's data. -->
+    {% for u in userlist %}
+        <tr>
+            <td class="users-name" title="The User's unique username for this Club.">{{u[0]}}</td>
+            <td class="users-fullname" title="The User's name.">{{u[1]}}</td>
+            <td class="users-usertype" title="The User's access level (including administrative permissions)." >{{u[2]}}</td>
+            <td class="users-active"><input type="checkbox" id="active" name="active" value="True" disabled {% if u[3] == True %} title="The User is active (may log in)." checked{% endif %}></td>
+            <td class="users-action"><button type="submit" id="view_{{u[0]}}" name="view_{{u[0]}}" value="{{u[0]}}">View</td>
+            <td class="users-action"><button type="submit" id="edit_{{u[0]}}" name="edit_{{u[0]}}" value="{{u[0]}}" {% if user not in admins %} disabled {%endif %}>Edit</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endif %}
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

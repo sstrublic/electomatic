@@ -1,0 +1,80 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Load Event Data</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[13] == False %}
+
+    <div>
+        <br>
+        <p><label>This operation will REPLACE the Event's content.</label></p>
+        <p><label>Class, Entry, Owner, and Vote data will be changed.</label></p>
+        <br>
+        <p><label>THIS IS AN IRREVERSIBLE ACTION.</label></p>
+        <br>
+
+        {% if load_request == False %}
+        <p><label>Select the file below and click 'Submit' to start the process.</label></p>
+
+        <!-- Show the selection box. -->
+        <div style="padding:20px;">
+            <input type="file" name="file" accept=".xlsx" autocomplete="off" autofocus>
+        </div>
+
+        {% elif confirm_request == False %}
+            <!-- Show the fle name. -->
+            <p><label>Import File: {{filename}}</label></p>
+            <p><label>Event Name: {{eventname}}</label></p>
+            <br>
+            <p><label>Click 'Validate' to check the file before proceeding.</label></p>
+            <p><label>Click 'Confirm' to confirm the action should proceed.</label></p>
+        {% else %}
+            <p><label>Import File: {{filename}}</label></p>
+            <p><label>Event Name: {{eventname}}</label></p>
+            <br>
+            <p><label>Click 'Load Data' to LOAD EVENT DATA:</label></p>
+        {% endif %}
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+        {% if load_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="load">Submit</button>
+        {% elif confirm_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="validate">Validate</button>
+            <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm</button>
+        {% else %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Load Data</button>
+        {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

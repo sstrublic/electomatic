@@ -1,0 +1,68 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Save Event Data</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <div>
+        <br>
+        {% if filename == None %}
+
+        <p><label>Click 'Save Event Data' to Generate the Event Data File</label></p>
+
+        <label class="results" title="If checked, the export will include tabs for results." for="results">Include Results Summary</label>
+        <input type="checkbox" id="results" name="results" value="True" {% if results == True %} checked {% endif %}>
+        <br>
+
+        <label class="results" title="If checked, a ZIP file with photos and other images will be created for download." for="images">Retrieve Images</label>
+        <input type="checkbox" id="images" name="images" value="True" {% if images == True %} checked {% endif %}>
+        <br>
+
+        {% else %}
+
+        <!-- This link points to the export file on disk on the server. -->
+        <p><label><a class="link" href="{{ filepath }}" download='{{filename}}' target='blank'>Download Event Data File</a></label></p>
+
+        {% if imagefilename != None %}
+        <!-- This link points to the ZIP file of images on disk on the server. -->
+        <p><label><a class="link" href="{{ imagefilepath }}" download='{{imagefilename}}' target='blank'>Download Images</a></label></p>
+        {% endif %}
+
+        {% endif %}
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+        {% if filename == None %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Save Event Data</button>
+        {% else %}
+            <a href="{{ url_for('main_bp.exportdata') }}"><button>Regenerate File</button></a>
+
+        {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

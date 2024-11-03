@@ -1,0 +1,102 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Run the event-id field JS on page load. -->
+<script>
+    window.onload = function () {
+      showEventID();
+    }
+</script>
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Add User</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <div>
+        <label class="user" title="The User's unique username for this Club." for="username">User Name:</label>
+        <input class="user" type="text" maxlength="32" id="username" name="username" value="{{username}}"" autofocus><br>
+        <label class="user" title="The User's name." for="fullname">Full Name:</label>
+        <input class="user" type="text" maxlength="64" id="fullname" name="fullname" value="{{fullname}}"><br>
+        <label class="user" title="The User's password." for="passwd">Password:</label>
+        <input class="user" type="password" maxlength="64" id="passwd" name="passwd" value=""><br>
+        <label class="user" title="Enter the password again to confirm." for="confirmpasswd">Confirm Password:</label>
+        <input class="user" type="password" maxlength="64" id="confirmpasswd" name="confirmpasswd" value=""><br><br>
+
+        <!-- If a site admin (clubid = configdata[4] == 0), then we don't show this field (it defaults to admin). -->
+        {% if configdata[4] != '0' %}
+        <label class="user" title="The User's access level." for="usertype">User Type:</label>
+        <select class="user" id="usertype" name="usertype" onchange="showEventID();">
+            {% for u in usertypes %}
+            <option value={{u}} {% if u == usertype %}selected{% endif %}>{{u}}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <!-- The event ID that we want to assign to this user, if the user type is 'Public'. -->
+        <label class="user" title="The Event ID assigned to this User." for="eventid" id="eventidlabel">Event:</label>
+        <select class="user" id="eventid" name="eventid">
+            {% for e in eventdata %}
+            <option value={{e[0]}} {% if e[0] == eventid %}selected{% endif %}>{{e[1]}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        {% endif %}
+
+        <!-- This is only accessible for Club administration (Event admins cannot create Club admins) -->
+        {% if configdata[4] != '0' and configdata[5] == '0' %}
+        <label class="user" title="If checked, the User has Club-level administration privileges." for="clubadmin" id="clubadminlabel" hidden="true">Club Admin</label>
+        <input type="checkbox" id="clubadmin" name="clubadmin" value="True" hidden="true"
+            {% if clubadmin != None %}
+                {% if clubadmin == True %}checked{% endif %}
+            {% endif %}
+        >
+        {% endif %}
+        <br>
+
+        <label class="user" title="If checked, the User is active (may log in)." for="active">Active</label>
+        <input type="checkbox" id="active" name="active" value="True"
+            {% if active != None %}
+                {% if active == True %}checked{% endif %}
+            {% else %}
+                checked
+            {% endif %}
+        >
+        <br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+{% if user in admins %}
+<div align="center" style="padding:20px;">
+    <a href="{{ url_for('main_bp.edituser') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit User</button></a>
+    <a href="{{ url_for('main_bp.showusers') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Users</button></a>
+</div>
+<br>
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

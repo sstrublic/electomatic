@@ -1,0 +1,55 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Save Event Results</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <div>
+        <br>
+        {% if filename == None %}
+
+        <p><label>Click 'Save Results' to Generate the Event Results Data File</label></p>
+
+        {% else %}
+
+        <!-- This link points to the export file on disk on the server. -->
+        <p><label><a class="link" href="{{ filepath }}" download='{{filename}}' target='blank'>Download Event Results File</a></label></p>
+
+        {% endif %}
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+        {% if filename == None %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Save Results</button>
+        {% else %}
+            <a href="{{ url_for('main_bp.exportresults') }}"><button>Regenerate File</button></a>
+
+        {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

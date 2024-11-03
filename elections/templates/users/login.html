@@ -1,0 +1,56 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content-login">
+
+<div>
+<h1>
+    {% if clubs == True %}
+    <b>Club Login</b>
+    {% else %}
+    <b>Event Login</b>
+    {% endif %}
+</h1>
+</div>
+
+<div class="page-interior-public">
+
+<form action="" role="form" method="post">
+    <div>
+        {% if tenancy == True %}
+            {% if clubs == True %}
+            <label class="user" title="The Club ID or Event ID to access." for="clubid">Club ID</label>
+            <input class="clubid" type="tel" maxlength="8" id="clubid" name="clubid"autofocus><br>
+            {% else %}
+            <label class="user" title="The Event ID to access." for="clubid">Event ID</label>
+            <input class="clubid" type="tel" maxlength="8" id="clubid" name="clubid"autofocus><br>
+            {% endif %}
+        {% endif %}
+
+        <label class="user" title="The username." for="username">User Name</label>
+        <input class="user" type="text" maxlength="64" id="username" name="username" value="" {% if tenancy == False %} autofocus {% endif %}><br>
+        <label class="user" title="The User's password." for="passwd">Password</label>
+        <input class="user" type="password" maxlength="64" id="passwd" name="passwd" value=""><br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="login">Log In</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

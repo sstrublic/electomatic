@@ -1,0 +1,63 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Clubs List</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <div>
+        {% if clubdata|length == 0 %}
+        <p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Clubs to display.</span></p>
+        {% else %}
+        <table class="clubs" align="center">
+            <tr>
+                <th class="table-clubs-info">Select</th>
+                <th class="table-clubs-info">ID</th>
+                <th class="table-clubs-desc">Club Name</th>
+                <th class="table-clubs-info">Active</th>
+                <th class="table-clubs-info" colspan="2">Actions</th>
+            </tr>
+
+            <!-- Show each row's data. -->
+            {% for c in clubdata %}
+                <tr>
+                    <td class="table-clubs-info"><button type="submit" id="select_{{c[0]}}" name="select_{{c[0]}}" value="{{c[0]}}">Select</td>
+                    <td class="table-clubs-info" title="The Club's ID." style="font-weight:bold;">{{c[0]}}</td>
+                    <td class="table-clubs-desc" title="The name of the Club.">{{c[1]}}</td>
+                    <td class="table-clubs-info"><input title="If checked, the Club is active (may make changes to Users and Events)." type="checkbox"{% if c[5] == True %} checked {% endif %} disabled></td>
+                    <td class="table-clubs-info"><button type="submit" id="view_{{c[0]}}" name="view_{{c[0]}}" value="{{c[0]}}">View</td>
+                    <td class="table-clubs-info"><button type="submit" id="edit_{{c[0]}}" name="edit_{{c[0]}}" value="{{c[0]}}">Edit</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+<div align="center" style="padding:20px;">
+    <a href="{{ url_for('main_bp.addclub') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Club</button></a>
+    <a href="{{ url_for('main_bp.editclub') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Club</button></a>
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

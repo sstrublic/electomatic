@@ -1,0 +1,67 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Clear Event Data</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[13] == False %}
+
+    <div>
+        <br>
+        <p><label>This operation will CLEAR this Event's content.</label></p>
+        <p><label>ALL Classes, Entries, Votes and Results will be removed.</label></p>
+        <br>
+        <p><label>THIS IS AN IRREVERSIBLE ACTION.</label></p>
+        <br>
+
+        {% if reset_request == False %}
+        <p><label>Click 'Submit' to start the clear process.</label></p>
+
+        {% elif confirm_request == False %}
+        <p><label>Click 'Confirm' to confirm the clear should proceed.</label></p>
+
+        {% else %}
+        <p><label>Click 'Clear Event Data' to CLEAR THIS EVENT:</label></p>
+
+        {% endif %}
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+        {% if reset_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="reset">Submit</button>
+        {% elif confirm_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm</button>
+        {% else %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Clear Event Data</button>
+        {% endif %}
+
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

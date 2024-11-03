@@ -1,0 +1,19 @@
+
+include LICENSE.txt
+include README.txt
+
+include config.py
+include serve.py
+
+include ballotomatic.service
+include postgresql-install
+include upgradedb.py
+
+include source/exports/event_data_template.xlsx
+
+recursive-include schema *
+
+recursive-include source/templates *
+recursive-include source/static *
+
+recursive-include docs *.pdf

@@ -1,0 +1,13 @@
+/* Copyright 2021-2022 Steve Strublic
+
+   This work is the personal property of Steve Strublic, and as such may not be
+   used, distributed, or modified without my express consent.
+*/
+
+body, html,  #page-container, .scrollable-page, .ps, .panel {
+    margin-top: 0%;
+    height: 100% !important;
+    width: 100% !important;
+    display: block;
+    overflow: visible;
+}

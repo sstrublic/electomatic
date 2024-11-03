@@ -1,0 +1,1341 @@
+/* Copyright 2021-2022 Steve Strublic
+
+   This work is the personal property of Steve Strublic, and as such may not be
+   used, distributed, or modified without my express consent.
+*/
+
+/* Headers */
+h1 {
+    text-align: center;
+    text-transform: uppercase;
+    padding: 6px;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+    background-color: white;
+    width: 100%;
+}
+
+h2 {
+    text-transform: uppercase;
+    padding-left: 10px;
+    width: 100%;
+}
+
+h3 {
+    text-transform: uppercase;
+    padding-left: 16px;
+    width: 100%;
+}
+
+h4 {
+    text-transform: uppercase;
+    padding-left: 20px;
+    width: 100%;
+}
+
+h5 {
+    text-align: left;
+    font-size: 16px;
+    padding-left: 8px;
+    width: 100%;
+}
+
+body {
+    background-color: #f4f4f4;
+}
+
+footer {
+    background-color: #f4f4f4;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 16px;
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid black;
+}
+
+.menu-icons {
+    height: 20px;
+}
+
+.copyright {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    font-size: 10px;
+}
+
+.attribution {
+    position: fixed;
+    bottom: 0px;
+    right: 150px;
+    font-size: 10px;
+}
+
+.appname {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    font-size: 9px;
+}
+
+/* Padding for menu */
+.top-pad, .top-pad-login {
+    margin-top: 50px;
+}
+
+/* Padding for buttons at the top of a page */
+.top-buttons {
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+/* Disable scrolling everywhere except where we want it. */
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Float two columns side by side */
+.main-page-column {
+    float: left;
+    width: 50%;
+    padding: 0 4px;
+}
+
+.main-page-fullcolumn {
+    padding: 2px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.main-page-row {
+    margin: 0 -5px;
+    padding: 4px;
+}
+
+/* Clear floats after the columns */
+.main-page-row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Style the counter cards */
+.main-page-card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    text-align: center;
+    background-color: #eaeeea;
+}
+
+.page-content-public {
+    position: fixed;
+    top: 72px;
+    bottom: 16px;
+    width: 100%;
+    padding-top: 2px;
+    border-top: 1px solid gray;
+    overflow: auto;
+}
+
+.main-page-button-public {
+    font-size: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    width: 350px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Padding for menu */
+.top-pad-public {
+    margin-top: 50px;
+}
+
+.page-content-login {
+    position: fixed;
+    top: 72px;
+    bottom: 16px;
+    overflow: hidden;
+    width: 100%;
+    padding-top: 2px;
+    border-top: 1px solid gray;
+}
+
+
+/* Defines these when the screen is tall enough. */
+@media screen and (min-height:640px) {
+    .generic-public {
+        position: fixed;
+        top: 96px;
+        bottom: 16px;
+        overflow: auto;
+        width: 100%;
+        padding-top: 8px;
+    }
+
+    /* Defines the viewable content area for pages with buttons on top. */
+    .button-top-page-content-public {
+        position: fixed;
+        top: 186px;
+        bottom: 16px;
+        overflow: auto;
+        padding-top: 8px;
+        width: 100%;
+        border-top: 1px solid gray;
+    }
+
+    .button-top-page-content-twoheaders-public {
+        position: fixed;
+        top: 234px;
+        bottom: 16px;
+        overflow: auto;
+        padding-top: 8px;
+        width: 100%;
+        border-top: 1px solid gray;
+    }
+
+    @media screen and (min-width: 768px) {
+
+        /* Defines the content area of the page. */
+        .page-content {
+            position: fixed;
+            top: 72px;
+            bottom: 16px;
+            width: 100%;
+            padding-top: 2px;
+            border-top: 1px solid gray;
+            overflow: auto;
+        }
+
+        .page-interior-public {
+            position: fixed;
+            top: 152px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+            border-top: 1px solid gray;
+        }
+
+        .page-interior {
+            position: relative;
+            top: 2px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+            border-top: 1px solid gray;
+        }
+
+        .page-interior-twoheaders {
+            position: relative;
+            top: 2px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+            border-top: 1px solid gray;
+        }
+
+        /* Defines the viewable content area for pages with buttons on top. */
+        .button-top-page-content {
+            position: fixed;
+            top: 206px;
+            bottom: 16px;
+            overflow: auto;
+            padding-top: 8px;
+            width: 100%;
+            border-top: 1px solid gray;
+        }
+
+        .button-top-page-content-twoheaders {
+            position: fixed;
+            top: 268px;
+            bottom: 16px;
+            overflow: auto;
+            padding-top: 8px;
+            width: 100%;
+            border-top: 1px solid gray;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        /* Float two columns side by side */
+        .main-page-column {
+            padding: 2px;
+        }
+
+        .page-interior-public {
+            position: fixed;
+            top: 140px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+            border-top: 1px solid gray;
+        }
+
+        /* Defines the content area of the page. */
+        .page-content {
+            position: fixed;
+            top: 108px;
+            bottom: 16px;
+            width: 100%;
+            padding-top: 2px;
+            border-top: 1px solid gray;
+            overflow: auto;
+        }
+
+        .page-interior, .page-interior-twoheaders, .button-top-page-content, .button-top-page-content-twoheaders {
+            position: relative;
+            overflow: auto;
+            padding-top: 8px;
+            width: 100%;
+            border-top: 1px solid gray;
+        }
+    }
+}
+
+/* Defines these when the screen is short. */
+@media screen and (max-height:639px) {
+    .generic-public {
+        position: fixed;
+        top: 106px;
+        bottom: 16px;
+        overflow: auto;
+        width: 100%;
+        padding-top: 8px;
+    }
+
+    @media screen and (min-width: 768px) {
+
+        /* Defines the content area of the page. */
+        .page-content {
+            position: fixed;
+            top: 72px;
+            bottom: 16px;
+            width: 100%;
+            padding-top: 2px;
+            border-top: 1px solid gray;
+            overflow: auto;
+        }
+
+    }
+
+    @media screen and (max-width: 767px) {
+
+        /* Defines the content area of the page. */
+        .page-content {
+            position: fixed;
+            top: 110px;
+            bottom: 16px;
+            width: 100%;
+            padding-top: 2px;
+            border-top: 1px solid gray;
+            overflow: auto;
+        }
+    }
+
+    .page-interior, .page-interior-public {
+        width: 100%;
+    }
+
+    .page-interior-twoheaders {
+        width: 100%;
+    }
+
+    /* Defines the viewable content area for pages with buttons on top. */
+    .button-top-page-content, .button-top-page-content-public {
+        width: 100%;
+    }
+
+    .button-top-page-content-twoheaders, .button-top-page-content-twoheaders-public {
+        width: 100%;
+    }
+}
+
+.page-content-nopadding {
+    padding-top: 0px;
+}
+
+.page-content-noheader {
+    position: fixed;
+    top: 76px;
+    bottom: 16px;
+    overflow: auto;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid gray;
+}
+
+.navbar {
+    min-height: 42px;
+}
+
+.navbar-brand, .navbar-brand-public {
+    float: left;
+    height: 42px;
+    line-height: 42px;
+}
+
+.navbar-nav > li > a {
+    /* (80px - line-height of 27px) / 2 = 26.5px */
+    line-height: 10px;
+}
+
+.navbar-nav li:hover > ul.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+    top:0;
+    left:100%;
+    margin-top:-4px;
+}
+
+@media screen and (max-width:767px) {
+    /* Specific to small displays to overlap menus.  */
+    .dropdown-submenu > .dropdown-menu {
+        position:relative;
+        left: 80px;
+        margin-top: 0px;
+    }
+}
+
+/* Generic table look */
+table {
+    border-collapse: collapse;
+    border: 2px solid black;
+}
+
+table td, th {
+    border: 1px solid #ddd;
+    padding: 4px;
+    font-size: 18px;
+}
+
+table tr:nth-child(even) {
+    background-color: #f4f4f4;
+}
+
+table tr:nth-child(odd) {
+    background-color: #eaeeea;
+}
+
+table th {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: #238360;
+    color: white;
+}
+
+/* Specific to config entry table */
+table.config {
+    border: none;
+}
+
+table.config td, table.config tr {
+    border: none;
+}
+
+table.config tr:nth-child(even), table.config tr:nth-child(odd) {
+    background-color: #f4f4f4;
+}
+
+select.loglevel {
+    font-size:20px;
+    width: 125px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+input.logstr {
+    font-size: 20px;
+    width: 220px;
+}
+
+input.gotoline {
+    font-size: 20px;
+    width: 100px;
+}
+
+/* Label */
+label {
+    font-weight: bold;
+    font-size: 20px;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+button {
+    color: black;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #aaaaaa;
+    background-color: white;
+    font-size: 20px;
+    box-shadow: 0 2px 2px 0 black, 0 2px 2px 0 black;
+}
+
+button:hover {
+    background-color: rgb(199, 214, 207);
+}
+
+button:active {
+    transform: translateY(2px) translateX(2px);
+    box-shadow: 0 1px 1px 0 black, 0 1px 1px 0 black;
+}
+
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+input:disabled {
+    color: black;
+}
+
+input.button {
+    color: black;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #aaaaaa;
+    background-color: white;
+    font-size: 20px;
+    box-shadow: 0 2px 2px 0 black, 0 2px 2px 0 black;
+}
+
+.home-button {
+    box-shadow: none;
+    border: none;
+}
+
+.home-button:hover {
+    background-color: lightgray;
+}
+
+.home-button:active {
+    transform: translateY(2px) translateX(2px);
+    border: none;
+    box-shadow: 0 0px 0px 0 black, 0 0px 0px 0 black;
+}
+
+.link {
+    color:#238360;
+}
+
+/* Generic input box */
+input {
+    font-size: 24px;
+}
+
+input.clubid {
+    margin-bottom: 2px;
+    width: 100px;
+}
+
+input.title {
+    margin-bottom: 2px;
+    width: 400px;
+}
+
+/* Messages */
+p.errormessage {
+    font-weight: bold;
+    color: #800000;
+}
+
+p.errormessage-soft {
+    color: #800000;
+}
+
+p.infomessage {
+    font-weight: bold;
+    color: #008000;
+}
+
+p.infomessage-soft {
+    color: #008000;
+}
+
+/* Common header after entry */
+p.infoheader {
+    padding-left:10px;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+p.infodata {
+    padding-left:20px;
+    font-size: 20px;
+    color: #238360;
+}
+
+p.infoheader-disabled, p.infodata-disabled {
+    color: #800000;
+}
+
+.confirm-message {
+    padding-top: 10px;
+    font-size: 24px;
+    color:#800000;
+    font-weight :bold;
+}
+
+.class-checkmark {
+    text-align: center;
+    width: 20px;
+}
+
+.table-logs {
+    width: 95%;
+    overflow: auto;
+}
+
+.table-logs thead th {
+    position: sticky;
+    top: -10px;
+    z-index: 1;
+}
+
+.logs-id {
+    text-align: center;
+    width: 40px;
+    min-width: 40px;
+}
+
+.logs-date {
+    text-align: center;
+    width: 100px;
+    min-width: 100px;
+}
+
+.logs-time {
+    text-align: center;
+    width: 110px;
+    min-width: 110px;
+}
+
+.logs-ip {
+    text-align: center;
+    width: 130px;
+    min-width: 130px;
+}
+
+.logs-level {
+    text-align: center;
+    width: 80px;
+    min-width: 80px;
+}
+
+.logs-user {
+    text-align: center;
+    width: 80px;
+    min-width: 80px;
+}
+
+.logs-entry {
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 13px;
+    padding-top: 1px;
+    padding-bottom: 0px;
+}
+
+.logs-data {
+    white-space: pre-wrap;
+    min-width: 400px;
+}
+
+.logs-ballot {
+    text-align: center;
+    width: 40px;
+    min-width: 40px;
+}
+
+.logs-votetype {
+    text-align: center;
+    width: 60px;
+    min-width: 60px;
+}
+
+.logs-action {
+    text-align: center;
+    width: 60px;
+    min-width: 60px;
+}
+
+.noclick {
+    pointer-events: none;
+}
+
+
+select.user {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+span.user {
+    font-size: 24px;
+}
+
+input.search, input.user {
+    margin-bottom: 2px;
+    width: 300px;
+}
+
+input.user-password-disabled {
+    padding-top:10px;
+    padding-bottom:6px;
+    font-size: 16px;
+    width: 300px;
+    border: none;
+}
+
+
+.table-clubs-info, .users-action {
+    text-align: center;
+    width: 80px;
+}
+
+.table-clubs-desc {
+    min-width: 250px;
+}
+
+.grid-header {
+    background-color: #238360;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+  }
+
+.grid-item {
+    font-size: 16px;
+    text-align: center;
+}
+
+.clubs {
+    font-size: 16px;
+}
+
+input.title, input.club {
+    margin-bottom: 2px;
+    width: 400px;
+}
+
+input.clubdesc {
+    margin-bottom: 2px;
+    width: 400px;
+}
+
+label.user, label.club, label.eventtitle {
+    width: 270px;
+}
+
+.clubid {
+    width: 120px;
+}
+
+.clubname {
+    min-width: 180px;
+}
+
+select.clubid {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+/* Note: Design for a width of 768px */
+@media screen and (max-width: 767px) {
+    h1 {
+        font-size: 24px;
+        text-align: center;
+        text-transform: uppercase;
+        padding: 6px;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+        width: 100%;
+    }
+
+    h2 {
+        font-size: 20px;
+        text-transform: uppercase;
+        padding-left: 10px;
+        width: 100%;
+    }
+
+    h3 {
+        font-size: 16px;
+        text-transform: uppercase;
+        padding-left: 16px;
+        width: 100%;
+    }
+
+    h4 {
+        text-transform: uppercase;
+        font-size: 14px;
+        padding-left: 20px;
+        width: 100%;
+    }
+
+    h5 {
+        text-align: left;
+        font-size: 14px;
+        padding-left: 8px;
+        width: 100%;
+    }
+
+    /* Padding for menu */
+    .top-pad {
+        margin-top: 90px;
+    }
+
+    .top-pad-login {
+        margin-top: 50px;
+    }
+
+    .configimage {
+        height: 24px;
+    }
+
+    /* Label */
+    label {
+        font-weight: bold;
+        font-size: 16px;
+        padding-left: 10px;
+        display: inline-block;
+    }
+
+    label.user {
+        width: 200px;
+        padding-left: 10px;
+    }
+
+    input.title, input.club {
+        margin-bottom: 2px;
+        width: 400px;
+    }
+
+    input.clubdesc {
+        margin-bottom: 2px;
+        width: 280px;
+    }
+
+    label.club {
+        width: 130px;
+    }
+
+    /* Anchors within a page, accounting for fixed header */
+    a.anchor {
+        display: block;
+        position: relative;
+    }
+
+    /* Anchors within a page, accounting for fixed header */
+    a.anchor-owner {
+        display: block;
+        position: relative;
+        top: -28px;
+    }
+
+    p.largemessage {
+        font-size: 24px;
+    }
+
+    button {
+        font-size: 18px;
+    }
+
+    /* Generic input box */
+    input {
+        font-size: 18px;
+    }
+
+    input.button {
+        font-size: 18px;
+    }
+
+    /* Common header after entry */
+    p.infoheader {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    p.infodata {
+        padding-left:10px;
+        font-size: 16px;
+        color: #238360;
+    }
+
+    .confirm-message {
+        font-size: 18px;
+    }
+
+    /* Max screen width */
+    .clubs, .users {
+        width: 99%;
+    }
+
+    .users-name {
+        width: 160px;
+        text-align: center;
+    }
+
+    .users-fullname {
+        width: 240px;
+        text-align: center;
+    }
+
+    .users-usertype {
+        width: 100px;
+        text-align: center;
+    }
+
+    .users-active {
+        width: 70px;
+        text-align: center;
+    }
+
+    select.loglevel {
+        font-size:16px;
+        width: 106px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    input.logstr {
+        font-size: 16px;
+        width: 200px;
+        display: none;
+    }
+
+    input.gotoline {
+        font-size: 16px;
+        width: 80px;
+    }
+
+    .clubid {
+        width: 60px;
+    }
+
+    .checkmark {
+        float: center;
+        height: 20px;
+        position: relative;
+        top: -2px;
+        z-index: 100;
+    }
+
+    .header-checkmark {
+        text-align: center;
+        width: 12px;
+        height: 16px;
+    }
+
+    /* Main page display */
+    .main-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-page > div {
+        margin: 10px;
+    }
+
+    .main-page-common-button {
+        font-size: 16px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        width: 200px;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .main-page-button {
+        font-size: 12px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        width: 210px;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    table td {
+        font-size: 14px;
+    }
+
+    table th {
+        font-size: 14px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .logs-date {
+        width: 90px;
+        min-width: 90px;
+    }
+
+    .logs-time {
+        width: 100px;
+        min-width: 100px;
+    }
+
+    .logs-level {
+        width: 70px;
+        min-width: 70px;
+    }
+
+    .logs-user {
+        width: 90px;
+        min-width: 90px;
+    }
+
+    .logs-ip {
+        width: 110px;
+        min-width: 110px;
+    }
+
+    .logs-entry {
+        font-size: 11px;
+    }
+
+    .message {
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 18px;
+    }
+
+    .pagebutton {
+        white-space: normal;
+        word-wrap: break-word;
+        font-size: 16px;
+        width: 200px;
+        height: 70px;
+    }
+
+    .showimage {
+        margin: auto;
+        display: block;
+        width: 100%;
+    }
+
+    .navbar-brand {
+        vertical-align: center;
+        height: 80px;
+        line-height: 80px;
+    }
+
+    .navbar-brand-public {
+        float: left;
+        vertical-align: center;
+        height: 42px;
+        line-height: 42px;
+    }
+
+    .navbar-nav > li, .navbar-nav {
+        float: left !important;
+        vertical-align: center;
+        margin: 1px;
+    }
+
+    .navbar-nav {
+        margin: 4px;
+    }
+
+    .nav-label {
+        font-size: 16px;
+        vertical-align: center;
+    }
+
+    .dropdown {
+        font-size: 16px;
+    }
+
+    .menuitem {
+        font-size: 16px;
+        padding-top: 2px;
+    }
+
+    /* Use when a menu separator is desired.   The separator follows the element.  */
+    li.separator {
+	    list-style: none;
+	    width: 100%;
+	    padding: 2px 0 4px 0;
+	    border-bottom: 1px solid #CCC;
+    }
+
+    input.search, input.user {
+        margin-bottom: 2px;
+        width: 200px;
+    }
+
+    input.user-password-disabled {
+        padding-top:8px;
+        padding-bottom:4px;
+        width: 300px;
+        font-size: 14px;
+        border: none;
+    }
+
+    span.user {
+        font-size: 18px;
+    }
+
+    select.clubid {
+        font-size: 16px;
+        max-width: 300px;
+        margin-bottom: 2px;
+    }
+}
+
+/* Note: Design for a width > 788px */
+@media screen and (min-width: 768px) {
+
+    .menuitem {
+        font-size: 16px;
+        padding-top: 4px;
+    }
+
+    /* Use when a menu separator is desired.   The separator follows the element.  */
+    li.separator {
+	    list-style: none;
+	    width: 100%;
+	    padding: 4px 0 4px 0;
+	    border-bottom: 1px solid #CCC;
+    }
+
+    .nav-label {
+        font-size: 16px;
+    }
+
+    .dropdown {
+        font-size: 16px;
+    }
+
+    .configimage {
+        height: 40px;
+    }
+
+    label {
+        padding-left: 20px;
+    }
+
+    /* Anchors within a page, accounting for fixed header */
+    a.anchor {
+        display: block;
+        position: relative;
+    }
+
+    a.anchor-owner {
+        display: block;
+        position: relative;
+        top: -32px;
+    }
+
+    p.largemessage {
+        font-size: 28px;
+    }
+
+    /* Main page display */
+    .main-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+    }
+
+    .main-page > div {
+        margin: 10px;
+    }
+
+    .main-page-button {
+        font-size: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        width: 350px;
+        word-wrap: break-word;
+    }
+
+    .main-page-common-button {
+        font-size: 24px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        width: 350px;
+        word-wrap: break-word;
+    }
+
+    .clubs {
+        width: 75%;
+    }
+
+    .users {
+        width: 75%;
+    }
+
+    .checkmark {
+        float: center;
+        height: 28px;
+        position: relative;
+        top: -4px;
+        z-index: 100;
+    }
+
+    .header-checkmark {
+        text-align: center;
+        width: 16px;
+        height: 20px;
+    }
+
+    .users-name {
+        min-width: 160px;
+        text-align: center;
+    }
+
+    .users-fullname {
+        min-width: 300px;
+        text-align: center;
+    }
+
+    .users-usertype {
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .users-active {
+        width: 80px;
+        text-align: center;
+    }
+
+    input[type=checkbox] {
+        /* larger checkboxes */
+        -ms-transform: scale(1.75); /* IE */
+        -moz-transform: scale(1.75); /* FF */
+        -webkit-transform: scale(1.75); /* Safari and Chrome */
+        -o-transform: scale(1.75); /* Opera */
+        transform: scale(1.75);
+    }
+
+    .message {
+        padding-left: 30px;
+        padding-right: 30px;
+        font-size: 20px;
+    }
+
+    .pagebutton {
+        white-space: normal;
+        word-wrap: break-word;
+        font-size:16px;
+        width: 260px;
+        height: 60px;
+    }
+}
+
+/* print format */
+@media print {
+
+    * {
+        text-shadow:none !important;
+        background:transparent !important;
+        box-shadow:none !important;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Headers */
+    h1 {
+        font-size: 18px;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+
+    h3 {
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 12px;
+    }
+
+    h5 {
+        font-size: 10px;
+    }
+
+    body {
+        background-color: white !important;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    table tr th {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    table td, th {
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    table tr:nth-child(even) {
+        background-color: #f4f4f4 !important;
+    }
+
+    table tr:nth-child(odd) {
+        background-color: #eaeeea !important;
+    }
+
+    .checkmark {
+        float: center;
+        height: 20px;
+        position: relative;
+        top: -2px;
+        z-index: 100;
+    }
+
+    .header-checkmark {
+        text-align: center;
+        width: 10px;
+        height: 14px;
+        padding: 0px;
+    }
+
+    button {
+        display: none !important;
+    }
+
+    /* Hide links when printing pages */
+    a[href]:after {
+        display:none;
+    }
+
+    .table-clubs-info, .table-clubs-desc {
+        font-size: 12px;
+    }
+
+}

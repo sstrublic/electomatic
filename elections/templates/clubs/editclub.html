@@ -1,0 +1,147 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Edit Club</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- If no entry yet taken, show this. -->
+    {% if clubid == None and search == None %}
+    <div>
+        <label class="search" title="The Club ID to search for." for="clubid">Club ID:</label>
+        <input class="clubid" type="tel" maxlength="8" id="clubid" name="clubid" \
+               {% if clubid == None %} autofocus {%endif %} \
+               {% if clubid != None %} disabled value="{{clubid}}" {% endif %}>
+        <span style="font-size: 18px;"><b>&nbsp;-OR-</b></span>
+        <br>
+        <label class="search" title="The Club Name to search for (Enter * for all Clubs)." for="last">Club Name:</label>
+        <input class="search" maxlength="64" id="namesearch" name="namesearch">
+        <div style="padding:10px;">
+            <button type="submit" id="entrybutton" disabled>Submit</button>
+        </div>
+    </div>
+
+    {% elif search != None and clubid == None %}
+    <div>
+        <input type="hidden" id="namesearch" name="namesearch" value="{{search}}">
+        {% if clubs != None %}
+        <table class="judges" align="center">
+            <tr>
+                <th class="grid-header clubid">ID</th>
+                <th class="grid-header clubname">Club Name</th>
+                <th class="grid-header clubname">Club Contact</th>
+            </tr>
+            {% for c in clubs %}
+            <tr>
+                <td class="grid-item clubid" title="The Club's ID."><b>{{c[0]}}</b></td>
+                <td class="grid-item clubname" title="The Club's name.">{{c[1]}}</td>
+                <td class="grid-item clubname" title="The Club's contact.">{{c[2]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+    <div>
+        <br>
+        <label title="Choose the Club ID to edit." for="clubid">Club ID:</label>
+        <select class="judgeid" id="clubid" name="clubid" autofocus>
+            {% for c in clubs %}
+            <option value="{{c[0]}}">{{c[0]}}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" id="entrybutton">Submit</button>
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+    </div>
+
+    {% else %}
+    <input type="hidden" id="clubid" name="clubid" value="{{clubid}}">
+
+    <div>
+        <p class="infoheader" title="The Club's ID.">Club ID: {{clubid}}</p>
+        <label class="club" title="The name of the Club." for="name">Club Name</label>
+        <input class="clubdesc" type="text" maxlength="64" id="clubname" name="clubname" value="{{clubname}}" autofocus><br><br>
+        <label class="club" title="The name of the Club's contact person." for="contact">Club Contact</label>
+        <input class="clubdesc" type="text" maxlength="64" id="contact" name="contact" value="{{contact}}"><br><br>
+        <label class="club" title="The Club's email address." for="email">Email</label>
+        <input class="clubdesc" type="text" maxlength="64" id="email" name="email" value="{{email}}"><br><br>
+        <label class="club" title="The Club's primary phone number." for="phone">Phone</label>
+        <input class="clubdesc" type="text" maxlength="32" id="phone" name="phone" value="{{phone}}"><br><br>
+
+        <!-- Only siteadmins can edit active status. -->
+        <label title="If checked, the Club is active (may make changes to Users and Events)." class="club" for="active" {% if configdata[6] == false %} hidden="true" {% endif %}>Account Active</label>
+        <input type="checkbox" id="active" name="active" value="True" {% if active == true %}checked{% endif %} {% if configdata[6] == false %} hidden="true" {% endif %}>
+        <br>
+        <br>
+
+        <p class="infoheader" title="Page and browser image customizations.">Image Customizations</p>
+
+        <!-- Using a table here to give us the alignment we want for the file input buttons-->
+        <table class="config">
+            <tr>
+                <td><label class="eventtitle" title="The icon that will be shown in the browser's tab for this Club and its Events." for="icon">Event Icon</label></td>
+
+                {% if icon != None %}
+                <td><img class="configimage" src="{{url_for('main_bp.clubimages', clubid=clubid, filename='' + icon)}}"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+
+                <td><input type="file" id="appfile" name="appfile" accept=".ico" autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td><label class="eventtitle" title="The image that will be shown as the Home button for this Club and its Events." for="homeimage">Home Image</label></td>
+
+                {% if homeimage != None %}
+                <td><img class="configimage" src="{{url_for('main_bp.clubimages', clubid=clubid, filename='' + homeimage)}}"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+
+                <td><input type="file" id="homefile" name="homefile" accept=".png,.jpg,.jpeg,.gif" autocomplete="off"></td>
+            </tr>
+        </table>
+
+        <br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+
+        </div>
+    </div>
+
+    {% endif %}
+
+</form>
+
+{% include 'messages.html' %}
+
+<!-- Don't show this if logged into an event or club = configdata[4] -->
+{% if configdata[4] == '0' %}
+<div align="center" style="padding:20px;">
+    <a href="{{ url_for('main_bp.showclubs') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Clubs</button></a>
+</div>
+<br>
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content page-content-nopadding">
+
+<div>
+<h1>
+    {% if configdata[4] == '0' %}
+    <b>View System Log</b>
+    {% elif configdata[5] == '0' %}
+    <b>View Club Log</b>
+    {% else %}
+    <b>View Event Log</b>
+    {% endif %}
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <div>
+        <!-- Next and previous buttons for browsing the log. -->
+        <div class="top-buttons">
+            <button type="submit" title="Go to the first page." id="browse" name="browse" value="first">&#10094;&#10094;</button>
+            <button type="submit" title="Go to the previous page." id="browse" name="browse" value="prev">&#10094;</button>
+            <button type="submit" title="Go to the next page." id="browse" name="browse" value="next">&#10095;</button>
+            <button type="submit" title="Go to the last page." id="browse" name="browse" value="last">&#10095;&#10095;</button>
+
+            <select class="loglevel" title="Minimum log level to display." id="loglevel" name="loglevel" autofocus onchange="simulateClick('setlevel');">
+                {% for l in loglevels %}
+                <option value="{{loop.index0}}" {% if loop.index0 == loglevel %} selected {% endif %}>{{l}}</option>
+                {% endfor %}
+            </select>
+
+            <input class="logstr" title="String on which to filter logs." maxlength="32" id="logstr" name="logstr" value="{{logstr}}">
+
+            <input class="gotoline" title="Log line to move to." maxlength="32" id="gotoline" name="gotoline">
+
+            <button type="submit" title="Set the text and/or line number for filtering." id="setlevel" name="setlevel" value="set">Filter</button>
+
+            <!-- This link points to the log file on disk on the server. -->
+            <label><a class="link" href="{{ filepath }}" download='{{filename}}' target='blank'>Download</a></label>
+        </div>
+
+        <div class="button-top-page-content">
+            <!-- Display the N lines of the log as selected in a table. -->
+            <table class="table-logs" align="center">
+                <thead>
+                <tr>
+                    <th class="logs-id">Line</th>
+                    <th class="logs-date">Date</th>
+                    <th class="logs-time">Time</th>
+                    <th class="logs-level">Level</th>
+                    <th class="logs-id">Club</th>
+                    <th class="logs-id">Event</th>
+                    <th class="logs-user">User</th>
+                    <th class="logs-ip">From</th>
+                    <th class="logs-data">Entry</th>
+                </tr>
+                </thead>
+
+                {% for l in logdata %}
+                <tr {% if l[3] == 'INFO' %}style="color: darkgreen;"{% endif %}
+                    {% if l[3] == 'WARNING' %}style="color: blue"{% endif %}
+                    {% if l[3] == 'ERROR' %}style="color: red"{% endif %}
+                    {% if l[3] == 'CRITICAL' %}style="color: red; font-weight:bold;"{% endif %}
+                    {% if '<<<' in l[8] or '>>>' in l[8] %} style="color: #9f9f9f;" {% endif %}
+                >
+                    <td class="logs-id logs-entry">{{l[0]}}</td>
+                    <td class="logs-date logs-entry">{{l[1]}}</td>
+                    <td class="logs-time logs-entry">{{l[2]}}</td>
+                    <td class="logs-level logs-entry">{{l[3]}}</td>
+                    <td class="logs-id logs-entry">{{l[4]}}</td>
+                    <td class="logs-id logs-entry">{{l[5]}}</td>
+                    <td class="logs-user logs-entry">{{l[6]}}</td>
+                    <td class="logs-ip logs-entry">{{l[7]}}</td>
+                    <td class="logs-data logs-entry">{{l[8]}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}
