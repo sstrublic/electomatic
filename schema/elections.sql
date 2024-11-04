@@ -38,10 +38,6 @@ INSERT INTO clubs (clubid, clubname, contact, email, phone, active, icon, homeim
            ;
 
 --. Event configuraton.
---. v6: Add event lock.
---. v7: Add votekey timeout.
---. v8: Add single public popular vote option.
---. v9: Add vote type management.
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
     clubid INTEGER NOT NULL DEFAULT 0,
@@ -79,8 +75,6 @@ INSERT INTO vote_ballotid (clubid, eventid, ballotid) VALUES(1, 1, 1);
 GRANT ALL PRIVILEGES ON TABLE vote_ballotid TO elections;
 
 --. All users (of the application).
---. v2: add eventid column (public users must be tied to events)
---. v5: add public user login key
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id SERIAL,
@@ -113,6 +107,82 @@ INSERT INTO users (clubid, username, fullname, passwd, usertype, active, clubadm
 --. The hash is the equivalent of 'admin'.
 INSERT INTO users (clubid, username, fullname, passwd, usertype, active, clubadmin, siteadmin)
             VALUES(1, 'admin', 'Default Admin User', 'pbkdf2:sha256:260000$bXp7kIcjNbRosjUH$860d6123c4c1631fc92c9d21cf235aca93f2c6a2ba7af6bd92b54ad9410827e5', 'Admin', true, true, true);
+
+
+--. All ballotitems for an event.
+DROP TABLE IF EXISTS ballotitems;
+CREATE TABLE ballotitems (
+    id SERIAL,
+    clubid INTEGER NOT NULL DEFAULT 0,
+    eventid INTEGER NOT NULL DEFAULT 0,
+    itemid INTEGER NOT NULL,
+    type INTEGER NOT NULL,
+    name VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    positioncount INTEGER NOT NULL DEFAULT 1,
+    UNIQUE(clubid, eventid, itemid)
+);
+
+GRANT ALL PRIVILEGES ON TABLE ballotitems TO elections;
+
+--. A candidate for a given race.
+DROP TABLE IF EXISTS candidates;
+CREATE TABLE candidates (
+    id SERIAL,
+    clubid INTEGER NOT NULL DEFAULT 0,
+    eventid INTEGER NOT NULL DEFAULT 0,
+    itemid INTEGER NOT NULL,
+    firstname VARCHAR NOT NULL,
+    lastname VARCHAR NOT NULL,
+    fullname VARCHAR NOT NULL,
+    writein BOOLEAN NOT NULL DEFAULT false,
+    UNIQUE(clubid, eventid, itemid, fullname)
+);
+
+GRANT ALL PRIVILEGES ON TABLE candidates TO elections;
+
+--. A candidate for a given race.
+DROP TABLE IF EXISTS questions;
+CREATE TABLE questions (
+    id SERIAL,
+    clubid INTEGER NOT NULL DEFAULT 0,
+    eventid INTEGER NOT NULL DEFAULT 0,
+    itemid INTEGER NOT NULL,
+    description VARCHAR NOT NULL,
+    UNIQUE(clubid, eventid, itemid, description)
+);
+
+GRANT ALL PRIVILEGES ON TABLE questions TO elections;
+
+--. A voter for a given event.
+DROP TABLE IF EXISTS voters;
+CREATE TABLE voters (
+    id SERIAL,
+    clubid INTEGER NOT NULL DEFAULT 0,
+    eventid INTEGER NOT NULL DEFAULT 0,
+    itemid INTEGER NOT NULL,
+    firstname VARCHAR NOT NULL,
+    lastname VARCHAR NOT NULL,
+    fullname VARCHAR NOT NULL,
+    voteid INTEGER NOT NULL,
+    voted BOOLEAN NOT NULL DEFAULT false,
+    UNIQUE(clubid, eventid, itemid, fullname),
+    UNIQUE(clubid, eventid, itemid, voteid)
+);
+
+GRANT ALL PRIVILEGES ON TABLE voters TO elections;
+
+--. A vote for a given event.
+DROP TABLE IF EXISTS votes;
+CREATE TABLE votes (
+    id SERIAL,
+    clubid INTEGER NOT NULL DEFAULT 0,
+    eventid INTEGER NOT NULL DEFAULT 0,
+    itemid INTEGER NOT NULL,
+    answer INTEGER NOT NULL
+);
+
+GRANT ALL PRIVILEGES ON TABLE votes TO elections;
 
 --. Grant ability to update all sequence start values.
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO elections;

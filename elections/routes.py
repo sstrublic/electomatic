@@ -28,6 +28,7 @@ import elections.clubs as clubs
 import elections.events as events
 import elections.logdata as logdata
 import elections.docs as docs
+import elections.ballotitems as ballotitems
 
 from elections.log import AppLog
 
@@ -960,3 +961,82 @@ def logfile(filename):
         return unauthorized()
 
     return send_file(os.path.join(app.config.get('LOG_FOLDER'), filename) )
+
+
+# Add a ballot item.
+@main_bp.route('/ballots/additem', methods=['GET', 'POST'])
+@login_required
+def additem():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return ballotitems.addItem(user)
+
+# Add a ballot item.
+@main_bp.route('/ballots/edititem', methods=['GET', 'POST'])
+@login_required
+def edititem():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return ballotitems.addItem(user)
+
+# Add a ballot item.
+@main_bp.route('/ballots/removeitem', methods=['GET', 'POST'])
+@login_required
+def removeitem():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return ballotitems.addItem(user)
+
+
+# Show ballot items.
+@main_bp.route('/ballots/showitem', methods=['GET', 'POST'])
+@login_required
+def showitem():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    return ballotitems.showItem(user)
+
+
+# Show ballot items.
+@main_bp.route('/ballots/showitems', methods=['GET', 'POST'])
+@login_required
+def showitems():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    return ballotitems.showItems(user)
+

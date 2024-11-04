@@ -262,6 +262,24 @@ event locked = configdata[12]
 
         </li>
       </ul>
+
+      <!-- Ballots. -->
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#">
+            <span class="nav-label">Ballots</span>
+              <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            {% if configdata[12] == false %}<li class="menuitem" ><a href="{{ url_for('main_bp.additem') }}">Add Item</a></li>{% endif %}
+            {% if configdata[12] == false %}<li class="menuitem"><a href="{{ url_for('main_bp.edititem') }}">Edit Item</a></li>{% endif %}
+            {% if configdata[12] == false %}<li class="menuitem separator"><a href="{{ url_for('main_bp.removeitem') }}">Remove Item</a></li>{% endif %}
+            <li class="menuitem"><a href="{{ url_for('main_bp.showitems') }}">View Items</a></li>
+          </ul>
+        </li>
+      </ul>
+
       {% endif %}
 
       <ul class="nav navbar-nav">

@@ -251,3 +251,28 @@ window.onkeydown = function(event) {
     }
   }
 }
+
+function printDiv(divId) {
+  var printContents = document.getElementById(divId).innerHTML;
+  var originalContents = document.body.innerHTML;
+
+  document.body.innerHTML = printContents;
+
+  window.print();
+
+  document.body.innerHTML = originalContents;
+}
+
+function showBallotItemFields() {
+  var type = document.getElementById('type');
+  var value = type.value;
+  var hidden = false;
+
+  if (2 == value) {
+    hidden = true;
+  }
+
+  document.getElementById("positioncountlabel").hidden = hidden;
+  document.getElementById("positioncount").hidden = hidden;
+  document.getElementById("positioncountspacer").hidden = hidden;
+}

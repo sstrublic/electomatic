@@ -705,7 +705,7 @@ input.title {
     width: 400px;
 }
 
-.table-clubs-info, .table-events-info, .users-action {
+.table-clubs-info, .table-events-info, .users-action, .ballotitems-action {
     text-align: center;
     width: 100px;
 }
@@ -741,7 +741,7 @@ input.clubdesc {
     width: 400px;
 }
 
-label.search, label.user, label.club, label.event, label.eventtitle {
+label.search, label.user, label.club, label.event, label.eventtitle, label.ballotitem {
     width: 270px;
 }
 
@@ -788,6 +788,55 @@ table.clubs th, table.events th {
 
 .table-datetime {
     min-width: 250px;
+}
+
+.ballotitems {
+    width: 90%;
+}
+
+.table-ballotitems-itemid, .table-ballotitems-positions {
+    min-width: 80px;
+    text-align: center;
+}
+
+.table-ballotitems-type {
+    min-width: 100px;
+    text-align: center;
+}
+
+.table-ballotitems-name {
+    min-width: 250px;
+}
+
+.table-ballotitems-desc {
+    min-width: 250px;
+}
+
+select.ballotitem-type, input.ballotitem-type {
+    margin-bottom: 2px;
+    width: 140px;
+    font-size: 24px;
+}
+
+input.ballotitem-positions {
+    margin-bottom: 2px;
+    width: 60px;
+}
+
+input.ballotitem-name {
+    margin-bottom: 2px;
+    width: 400px;
+}
+
+textarea.ballotitem-desc {
+    margin-bottom: 2px;
+    padding-left: 10px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+div.ballotitem-textarea {
+    padding-left: 20px;
 }
 
 /* Note: Design for a width of 768px */
@@ -1158,8 +1207,54 @@ table.clubs th, table.events th {
         text-align: center;
     }
 
-    .table-clubs-info, .table-events-info {
+    .table-clubs-info, .table-events-info, .ballotitems-action {
         min-width: 90px;
+    }
+
+    .table-ballotitems-itemid, .table-ballotitems-positions {
+        min-width: 90px;
+        text-align: center;
+    }
+
+    .table-ballotitems-type {
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .table-ballotitems-name {
+        min-width: 150px;
+    }
+
+    .table-ballotitems-desc {
+        min-width: 200px;
+    }
+
+    select.ballotitem-type, input.ballotitem-type {
+        margin-bottom: 2px;
+        width: 120px;
+        font-size: 18px;
+    }
+
+    input.ballotitem-positions {
+        margin-bottom: 2px;
+        width: 50px;
+    }
+
+    input.ballotitem-name {
+        margin-bottom: 2px;
+        width: 300px;
+    }
+
+    textarea.ballotitem-desc {
+        margin-bottom: 2px;
+        padding-left: 10px;
+        font-size: 16px;
+        display: inline-block;
+        width: 600px;
+    }
+
+    div.ballotitem-textarea {
+        padding-left: 10px;
     }
 }
 

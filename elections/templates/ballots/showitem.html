@@ -1,0 +1,61 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Ballot Item {{itemdata['itemid']}}</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[12] == False %}
+    <div>
+        <label class="ballotitem" title="The type of ballot item to create." for="type">Item Type</label>
+        <input class="ballotitem-type" type="text" id="type" name="type" value="{{itemdata['typestr']}}" disabled><br><br>
+
+        {% if itemdata['type'] == 1 %}
+        <label class="ballotitem" title="The number of positions up for election." for="positioncount" id="positioncountlabel"># of Positions</label>
+        <input class="ballotitem-positions" type="number" min="1" id="positioncount" name="positioncount" value="{{itemdata['positioncount']}}" disabled><br><br>
+        {% endif %}
+
+        <label class="ballotitem" title="the name of the ballot item." for="name">Item Name</label>
+        <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{itemdata['name']}}" disabled><br><br>
+
+        <label class="ballotitem" title="Describes the ballot item." for="description">Item Description</label><br>
+            <div class="ballotitem-textarea">
+        <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description" disabled>{{itemdata['description']}}</textarea>
+        </div>
+        <br><br>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+<!-- If the event is locked, then nothing can be done. -->
+<div align="center" style="padding:20px;">
+    {% if configdata[12] == False %}
+    <a href="{{ url_for('main_bp.edititem')}}?itemid={{itemid}}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Ballot Item</button></a>
+    {% endif %}
+    <a href="{{ url_for('main_bp.showitems') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Ballot Items</button></a>
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

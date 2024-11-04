@@ -1,0 +1,73 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Add Ballot Item</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[12] == False %}
+    <div>
+        <label class="ballotitem" title="The type of ballot item to create." for="type">Item Type</label>
+        <select class="ballotitem-type" id="type" name="type" onchange="showBallotItemFields();" autofocus>
+            {% for i in itemtypes %}
+            <option value="{{i}}" {% if i == type %} selected {% endif %}>{{itemtypes[i]}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label class="ballotitem" title="The number of positions up for election." for="positioncount" id="positioncountlabel"># of Positions</label>
+        <input class="ballotitem-positions" type="number" min="1" max="99" id="positioncount" name="positioncount" value="{{positioncount}}">
+        <br id="positioncountspacer">
+        <br id="positioncountspacer">
+
+        <label class="ballotitem" title="the name of the ballot item." for="name">Item Name</label>
+        <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{name}}"><br><br>
+
+        <label class="ballotitem" title="Describes the ballot item." for="description">Item Description</label><br>
+
+        <div class="ballotitem-textarea">
+            <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description">{{description}}</textarea>
+        </div>
+        <br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+<!-- If the event is locked, then nothing can be done. -->
+<div align="center" style="padding:20px;">
+    {% if configdata[12] == False %}
+    <a href="{{ url_for('main_bp.edititem') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Ballot Item</button></a>
+    {% endif %}
+    <a href="{{ url_for('main_bp.showitems') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Ballot Items</button></a>
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

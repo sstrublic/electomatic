@@ -1,0 +1,115 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user in admins %}
+<div class="page-content">
+{% else %}
+<div class="page-content-public">
+{% endif %}
+
+<div>
+<h1>
+    <b>Ballot Items</b>
+</h1>
+</div>
+
+{% if user in admins %}
+<div class="page-interior">
+{% else %}
+<div class="page-interior-public">
+{% endif %}
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- Controls. -->
+    <div class="top-buttons">
+        <button type="button" id="printbutton" name="printbutton" value="print" onclick="printDiv('printableArea');">Print</button>
+    </div>
+
+    {% if user in admins %}
+    <div class="button-top-page-content" id="printableArea">
+    {% else %}
+    <div class="button-top-page-content-public" id="printableArea">
+    {% endif %}
+
+        {% if itemdata|length == 0 %}
+        <p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Ballot Items to display.</span></p>
+        {% else %}
+
+        <table class="ballotitems" align="center">
+            <thead>
+            <tr>
+                <th class="table-ballotitems-itemid">Item ID</th>
+                <th class="table-ballotitems-type">Type</th>
+                <th class="table-ballotitems-name">Name</th>
+                <th class="table-ballotitems-desc">Description</th>
+                <th class="table-ballotitems-positions">Positions</th>
+                <th class="ballotitems-action" colspan="2">Actions</th>
+            </tr>
+            </thead>
+
+            <!-- Show each row's data. -->
+            {% for i in itemdata %}
+                <tr>
+                    <td class="table-ballotitems-itemid" title="The Item ID (click to view)." style="font-weight:bold;" id="item{{i['itemid']}}" itemid="{{i['itemid']}}">
+                        <a class="link" href="{{url_for('main_bp.showitems') + '#'~i['itemid']}}">{{i['itemid']}}
+                    </td>
+                    <td class="table-ballotitems-type" title="The ballot item type.">{{i['typestr']}}</td>
+                    <td class="table-ballotitems-name" title="The name of the ballot item.">{{i['name']}}</td>
+                    <td class="table-ballotitems-desc" title="Description: '{{i['description']}}'">
+                        {% if i['description']|length > 39 %}
+                        {{i['description'][0:39]}}...
+                        {% else %}
+                        {{i['description']}}
+                        {% endif %}
+                    </td>
+
+                    {% if i['type'] == 1 %}
+                    <td class="table-ballotitems-positions" title="The number of positions being chosen.">{{i['positioncount']}}</td>
+                    {% else %}
+                    <td class="table-ballotitems-positions">N/A</td>
+                    {% endif %}
+                    <td class="ballotitems-action"><button type="submit" id="view_{{i['itemid']}}" name="view_{{i['itemid']}}" value="{{i['itemid']}}">View</td>
+                    <td class="ballotitems-action"><button type="submit" id="edit_{{i['itemid']}}" name="edit_{{i['itemid']}}" value="{{i['itemid']}}">Edit</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% endif %}
+
+        {% include 'messages.html' %}
+
+        <!-- If the event is locked, then nothing can be done. -->
+        {% if configdata[12] == False %}
+
+        {% if user != None and user in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="additem" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Ballot Item</button>
+        </div>
+        <br>
+        {% endif %}
+
+        {% endif %}
+
+        {% if user != None and user not in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="index" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Home</button>
+        </div>
+        <br>
+        {% endif %}
+
+    </div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}
