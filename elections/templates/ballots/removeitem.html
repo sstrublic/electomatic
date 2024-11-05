@@ -12,7 +12,7 @@
 
 <div>
 <h1>
-    <b>Ballot Item {{itemdata['itemid']}}</b>
+    <b>Remove Ballot Item {{itemdata['itemid']}}</b>
 </h1>
 </div>
 
@@ -21,8 +21,21 @@
 <form action="" role="form" method="post">
     <!-- If the event is locked, then nothing can be done. -->
     {% if configdata[12] == False %}
-    <div>
-        <label class="ballotitem" title="The type of ballot item to create." for="type">Item Type</label>
+    <!-- Controls. -->
+    <div class="top-buttons">
+        {% if delete_request == False %}
+        <button type="submit" id="savebutton" name="savebutton" value="delete">Submit</button>
+        {% elif confirm_request == False %}
+        <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm</button>
+        {% else %}
+        <button type="submit" id="savebutton" name="savebutton" value="save">Delete Item</button>
+        {% endif %}
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+    </div>
+
+    <div class="button-top-page-content">
+        <div style="width: 100%; text-align: center;"><span class="ballotitem">Removing Ballot Items will also remove all Candidates for the Contest.</span></div><br>
+        <label class="ballotitem" title="The type of ballot item." for="type">Item Type</label>
         <input class="ballotitem-type" type="text" id="type" name="type" value="{{itemdata['typestr']}}" disabled><br><br>
 
         {% if itemdata['type'] == 1 %}
@@ -40,22 +53,18 @@
             <div class="ballotitem-textarea">
         <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description" disabled>{{itemdata['description']}}</textarea>
         </div>
-        <br><br>
+        <br>
+
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="showitems" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Ballot Items</button>
+        </div>
+        <br>
     </div>
 
     {% endif %} <!-- event locked -->
 </form>
 
 {% include 'messages.html' %}
-
-<!-- If the event is locked, then nothing can be done. -->
-<div align="center" style="padding:20px;">
-    {% if configdata[12] == False %}
-    <a href="{{ url_for('main_bp.edititem')}}?itemid={{itemid}}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Ballot Item</button></a>
-    {% endif %}
-    <a href="{{ url_for('main_bp.showitems') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Ballot Items</button></a>
-</div>
-<br>
 
 </div>
 

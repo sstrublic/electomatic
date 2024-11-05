@@ -758,7 +758,7 @@ select.clubid, select.eventid {
     margin-bottom: 2px;
 }
 
-/* Specific to class-vote tables */
+/* Specific to club/event tables */
 table.clubs td, table.clubs th, table.events td, table.events th {
     border: 1px solid #ddd;
     font-size: 20px;
@@ -794,8 +794,8 @@ table.clubs th, table.events th {
     width: 90%;
 }
 
-.table-ballotitems-itemid, .table-ballotitems-positions {
-    min-width: 80px;
+.table-ballotitems-itemid, .table-ballotitems-positions, .table-ballotitems-writeins {
+    min-width: 120px;
     text-align: center;
 }
 
@@ -805,17 +805,24 @@ table.clubs th, table.events th {
 }
 
 .table-ballotitems-name {
-    min-width: 250px;
+    min-width: 200px;
 }
 
 .table-ballotitems-desc {
-    min-width: 250px;
+    min-width: 300px;
 }
 
 select.ballotitem-type, input.ballotitem-type {
     margin-bottom: 2px;
     width: 140px;
     font-size: 24px;
+}
+
+span.ballotitem {
+    font-size: 24px;
+    font-weight: bold;
+    padding-left: 20px;
+    text-align: center;
 }
 
 input.ballotitem-positions {
@@ -1057,7 +1064,7 @@ div.ballotitem-textarea {
     }
 
     table th {
-        font-size: 16px;
+        font-size: 14px;
         padding-top: 6px;
         padding-bottom: 6px;
     }
@@ -1211,7 +1218,19 @@ div.ballotitem-textarea {
         min-width: 90px;
     }
 
-    .table-ballotitems-itemid, .table-ballotitems-positions {
+    span.ballotitem {
+        font-size: 18px;
+        font-weight: bold;
+        padding-left: 20px;
+        text-align: center;
+    }
+
+    .table-ballotitems-itemid {
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .table-ballotitems-positions, .table-ballotitems-writeins {
         min-width: 90px;
         text-align: center;
     }
@@ -1226,7 +1245,7 @@ div.ballotitem-textarea {
     }
 
     .table-ballotitems-desc {
-        min-width: 200px;
+        min-width: 220px;
     }
 
     select.ballotitem-type, input.ballotitem-type {
@@ -1235,7 +1254,7 @@ div.ballotitem-textarea {
         font-size: 18px;
     }
 
-    input.ballotitem-positions {
+    input.ballotitem-positions, input.ballotitem-writeins {
         margin-bottom: 2px;
         width: 50px;
     }
@@ -1486,5 +1505,18 @@ div.ballotitem-textarea {
     /* Hide links when printing pages */
     a[href]:after {
         display:none;
+    }
+
+    .ballotitems th {
+        background-color: #238360 !important;
+        color: white !important;
+    }
+
+    table tr:nth-child(even) {
+        background-color: #f4f4f4 !important;
+    }
+
+    table tr:nth-child(odd) {
+        background-color: #eaeeea !important;
     }
 }

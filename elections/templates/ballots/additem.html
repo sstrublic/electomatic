@@ -30,10 +30,15 @@
         </select>
         <br><br>
 
-        <label class="ballotitem" title="The number of positions up for election." for="positioncount" id="positioncountlabel"># of Positions</label>
-        <input class="ballotitem-positions" type="number" min="1" max="99" id="positioncount" name="positioncount" value="{{positioncount}}">
-        <br id="positioncountspacer">
-        <br id="positioncountspacer">
+        <label class="ballotitem" title="The number of positions up for election." for="positions" id="positionslabel">Positions</label>
+        <input class="ballotitem-positions" type="number" min="1" max="99" id="positions" name="positions" value="{{positions}}">
+        <br id="positionsspacer1">
+        <br id="positionsspacer2">
+
+        <label class="ballotitem" title="Write-ins are allowed for this position." for="writeins" id="writeinslabel">Write-ins Allowed</label>
+        <input class="ballotitem-writeins" type="checkbox" id="writeins" name="writeins" value="True" {% if writeins == "True" %}checked{% endif %}>
+        <br id="writeinsspacer1">
+        <br id="writeinsspacer2">
 
         <label class="ballotitem" title="the name of the ballot item." for="name">Item Name</label>
         <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{name}}"><br><br>

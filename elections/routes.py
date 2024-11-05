@@ -995,9 +995,10 @@ def edititem():
     if user not in ADMINS[clubid]:
         return unauthorized()
 
-    return ballotitems.addItem(user)
+    return ballotitems.editItem(user)
 
-# Add a ballot item.
+
+# Remove a ballot item.
 @main_bp.route('/ballots/removeitem', methods=['GET', 'POST'])
 @login_required
 def removeitem():
@@ -1012,7 +1013,7 @@ def removeitem():
     if user not in ADMINS[clubid]:
         return unauthorized()
 
-    return ballotitems.addItem(user)
+    return ballotitems.removeItem(user)
 
 
 # Show ballot items.

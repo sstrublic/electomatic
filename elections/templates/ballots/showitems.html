@@ -45,12 +45,13 @@
         <table class="ballotitems" align="center">
             <thead>
             <tr>
-                <th class="table-ballotitems-itemid">Item ID</th>
+                <th class="table-ballotitems-itemid">ID</th>
                 <th class="table-ballotitems-type">Type</th>
                 <th class="table-ballotitems-name">Name</th>
                 <th class="table-ballotitems-desc">Description</th>
                 <th class="table-ballotitems-positions">Positions</th>
-                <th class="ballotitems-action" colspan="2">Actions</th>
+                <th class="table-ballotitems-positions">Write-ins</th>
+                <th class="ballotitems-action" colspan="3">Actions</th>
             </tr>
             </thead>
 
@@ -58,7 +59,7 @@
             {% for i in itemdata %}
                 <tr>
                     <td class="table-ballotitems-itemid" title="The Item ID (click to view)." style="font-weight:bold;" id="item{{i['itemid']}}" itemid="{{i['itemid']}}">
-                        <a class="link" href="{{url_for('main_bp.showitems') + '#'~i['itemid']}}">{{i['itemid']}}
+                        {{i['itemid']}}
                     </td>
                     <td class="table-ballotitems-type" title="The ballot item type.">{{i['typestr']}}</td>
                     <td class="table-ballotitems-name" title="The name of the ballot item.">{{i['name']}}</td>
@@ -71,12 +72,15 @@
                     </td>
 
                     {% if i['type'] == 1 %}
-                    <td class="table-ballotitems-positions" title="The number of positions being chosen.">{{i['positioncount']}}</td>
+                    <td class="table-ballotitems-positions" title="The number of positions being chosen.">{{i['positions']}}</td>
+                    <td class="table-ballotitems-writeins"><input title="Write-in candidates are allowed." type="checkbox"{% if i['writeins'] == True %} checked {% endif %} disabled></td>
                     {% else %}
                     <td class="table-ballotitems-positions">N/A</td>
+                    <td class="table-ballotitems-writeins">N/A</td>
                     {% endif %}
                     <td class="ballotitems-action"><button type="submit" id="view_{{i['itemid']}}" name="view_{{i['itemid']}}" value="{{i['itemid']}}">View</td>
                     <td class="ballotitems-action"><button type="submit" id="edit_{{i['itemid']}}" name="edit_{{i['itemid']}}" value="{{i['itemid']}}">Edit</td>
+                    <td class="ballotitems-action"><button type="submit" id="remove_{{i['itemid']}}" name="remove_{{i['itemid']}}" value="{{i['itemid']}}">Remove</td>
                 </tr>
             {% endfor %}
         </table>

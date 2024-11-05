@@ -272,7 +272,12 @@ function showBallotItemFields() {
     hidden = true;
   }
 
-  document.getElementById("positioncountlabel").hidden = hidden;
-  document.getElementById("positioncount").hidden = hidden;
-  document.getElementById("positioncountspacer").hidden = hidden;
+  document.getElementById("positionslabel").hidden = hidden;
+  document.getElementById("positions").hidden = hidden;
+  document.getElementById("positionsspacer1").hidden = hidden;
+  document.getElementById("positionsspacer2").hidden = hidden;
+  document.getElementById("writeinslabel").hidden = hidden;
+  document.getElementById("writeins").hidden = hidden;
+  document.getElementById("writeinsspacer1").hidden = hidden;
+  document.getElementById("writeinsspacer2").hidden = hidden;
 }

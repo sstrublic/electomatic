@@ -119,8 +119,10 @@ CREATE TABLE ballotitems (
     type INTEGER NOT NULL,
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
-    positioncount INTEGER NOT NULL DEFAULT 1,
-    UNIQUE(clubid, eventid, itemid)
+    positions INTEGER NOT NULL DEFAULT 1,
+    writeins BOOLEAN NOT NULL DEFAULT false,
+    UNIQUE(clubid, eventid, itemid),
+    UNIQUE(clubid, eventid, name)
 );
 
 GRANT ALL PRIVILEGES ON TABLE ballotitems TO elections;
@@ -140,19 +142,6 @@ CREATE TABLE candidates (
 );
 
 GRANT ALL PRIVILEGES ON TABLE candidates TO elections;
-
---. A candidate for a given race.
-DROP TABLE IF EXISTS questions;
-CREATE TABLE questions (
-    id SERIAL,
-    clubid INTEGER NOT NULL DEFAULT 0,
-    eventid INTEGER NOT NULL DEFAULT 0,
-    itemid INTEGER NOT NULL,
-    description VARCHAR NOT NULL,
-    UNIQUE(clubid, eventid, itemid, description)
-);
-
-GRANT ALL PRIVILEGES ON TABLE questions TO elections;
 
 --. A voter for a given event.
 DROP TABLE IF EXISTS voters;
@@ -179,7 +168,8 @@ CREATE TABLE votes (
     clubid INTEGER NOT NULL DEFAULT 0,
     eventid INTEGER NOT NULL DEFAULT 0,
     itemid INTEGER NOT NULL,
-    answer INTEGER NOT NULL
+    answer INTEGER NOT NULL,
+    commentary VARCHAR
 );
 
 GRANT ALL PRIVILEGES ON TABLE votes TO elections;

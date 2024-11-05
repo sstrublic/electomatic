@@ -12,35 +12,55 @@
 
 <div>
 <h1>
-    <b>Ballot Item {{itemdata['itemid']}}</b>
+    <b>Edit Ballot Item {{itemid}}</b>
 </h1>
 </div>
 
 <div class="page-interior">
+
+<script>
+    window.onload = function () {
+      showBallotItemFields();
+    }
+</script>
 
 <form action="" role="form" method="post">
     <!-- If the event is locked, then nothing can be done. -->
     {% if configdata[12] == False %}
     <div>
         <label class="ballotitem" title="The type of ballot item to create." for="type">Item Type</label>
-        <input class="ballotitem-type" type="text" id="type" name="type" value="{{itemdata['typestr']}}" disabled><br><br>
+        <select class="ballotitem-type" id="type" name="type" onchange="showBallotItemFields();" autofocus>
+            {% for i in itemtypes %}
+            <option value="{{i}}" {% if i == type %} selected {% endif %}>{{itemtypes[i]}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-        {% if itemdata['type'] == 1 %}
         <label class="ballotitem" title="The number of positions up for election." for="positions" id="positionslabel">Positions</label>
-        <input class="ballotitem-positions" type="number" min="1" id="positions" name="positions" value="{{itemdata['positions']}}" disabled><br><br>
+        <input class="ballotitem-positions" type="number" min="1" max="99" id="positions" name="positions" value="{{positions}}">
+        <br id="positionsspacer1">
+        <br id="positionsspacer2">
 
         <label class="ballotitem" title="Write-ins are allowed for this position." for="writeins" id="writeinslabel">Write-ins Allowed</label>
-        <input class="ballotitem-writeins" type="checkbox" id="writeins" name="writeins" value="True" {% if itemdata['writeins'] == True %}checked{% endif %} disabled><br><br>
-        {% endif %}
+        <input class="ballotitem-writeins" type="checkbox" id="writeins" name="writeins" value="True" {% if writeins == True %}checked{% endif %}>
+        <br id="writeinsspacer1">
+        <br id="writeinsspacer2">
 
         <label class="ballotitem" title="the name of the ballot item." for="name">Item Name</label>
-        <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{itemdata['name']}}" disabled><br><br>
+        <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{name}}"><br><br>
 
         <label class="ballotitem" title="Describes the ballot item." for="description">Item Description</label><br>
-            <div class="ballotitem-textarea">
-        <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description" disabled>{{itemdata['description']}}</textarea>
+
+        <div class="ballotitem-textarea">
+            <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description">{{description}}</textarea>
         </div>
         <br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+        </div>
     </div>
 
     {% endif %} <!-- event locked -->
