@@ -1,0 +1,64 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Add Contest Candidate</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[12] == False %}
+    <div>
+        <label class="candidate" title="The type of ballot item to create." for="type">Ballot Contest</label>
+        <select class="candidate-contest" id="contest" name="contest" autofocus>
+            {% for c in contests %}
+            <option value="{{c['itemid']}}" {% if c['itemid'] == itemid %} selected {% endif %}>{{c['name']}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label class="candidate" title="The candidate's first name." for="firstname">First Name</label>
+        <input class="candidate-name" maxlength="64" type="text" id="firstname" name="firstname" value="{{firstname}}"><br><br>
+        <label class="candidate" title="The candidate's last name." for="lastname">Last Name</label>
+        <input class="candidate-name" maxlength="64" type="text" id="lastname" name="lastname" value="{{lastname}}"><br><br>
+
+        <br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+<!-- If the event is locked, then nothing can be done. -->
+<div align="center" style="padding:20px;">
+    {% if configdata[12] == False %}
+    <a href="{{ url_for('main_bp.editcandidate') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Edit Candidate</button></a>
+    {% endif %}
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -310,7 +310,7 @@ def addItem(user):
                         current_user.logger.flashlog(None, "Positions: %s" % entryfields['positions']['value'], 'info', highlight=False, indent=True)
                         current_user.logger.flashlog(None, "Write-ins Allowed: %s" % ("Yes" if entryfields['writeins']['value'] is True else "No"), 'info', highlight=False, indent=True)
 
-                    current_user.logger.info("Add item type: Operation completed")
+                    current_user.logger.info("Add ballot item: Operation completed")
                     return redirect(url_for('main_bp.additem'))
 
         return render_template('ballots/additem.html', user=user, admins=ADMINS[current_user.event.clubid],

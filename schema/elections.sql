@@ -149,14 +149,13 @@ CREATE TABLE voters (
     id SERIAL,
     clubid INTEGER NOT NULL DEFAULT 0,
     eventid INTEGER NOT NULL DEFAULT 0,
-    itemid INTEGER NOT NULL,
     firstname VARCHAR NOT NULL,
     lastname VARCHAR NOT NULL,
     fullname VARCHAR NOT NULL,
     voteid INTEGER NOT NULL,
     voted BOOLEAN NOT NULL DEFAULT false,
-    UNIQUE(clubid, eventid, itemid, fullname),
-    UNIQUE(clubid, eventid, itemid, voteid)
+    UNIQUE(clubid, eventid, fullname),
+    UNIQUE(clubid, eventid, voteid)
 );
 
 GRANT ALL PRIVILEGES ON TABLE voters TO elections;

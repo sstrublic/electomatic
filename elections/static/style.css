@@ -741,7 +741,8 @@ input.clubdesc {
     width: 400px;
 }
 
-label.search, label.user, label.club, label.event, label.eventtitle, label.ballotitem {
+label.search, label.user, label.club, label.event, label.eventtitle,
+label.ballotitem, label.candidate {
     width: 270px;
 }
 
@@ -753,7 +754,7 @@ label.search, label.user, label.club, label.event, label.eventtitle, label.ballo
     min-width: 180px;
 }
 
-select.clubid, select.eventid {
+select.clubid, select.eventid, select.candidate-contest {
     font-size: 24px;
     margin-bottom: 2px;
 }
@@ -844,6 +845,15 @@ textarea.ballotitem-desc {
 
 div.ballotitem-textarea {
     padding-left: 20px;
+}
+
+span.candidate-contest {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+span.candidate-name {
+    font-size: 24px;
 }
 
 /* Note: Design for a width of 768px */
@@ -1180,7 +1190,7 @@ div.ballotitem-textarea {
         font-size: 18px;
     }
 
-    select.clubid, select.eventid {
+    select.clubid, select.eventid, select.candidate-contest {
         font-size: 16px;
         max-width: 300px;
         margin-bottom: 2px;
@@ -1274,6 +1284,15 @@ div.ballotitem-textarea {
 
     div.ballotitem-textarea {
         padding-left: 10px;
+    }
+
+    span.candidate-contest {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    span.candidate-name {
+        font-size: 18px;
     }
 }
 

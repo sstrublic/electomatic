@@ -29,6 +29,7 @@ import elections.events as events
 import elections.logdata as logdata
 import elections.docs as docs
 import elections.ballotitems as ballotitems
+import elections.candidates as candidates
 
 from elections.log import AppLog
 
@@ -980,7 +981,7 @@ def additem():
 
     return ballotitems.addItem(user)
 
-# Add a ballot item.
+# Edit a ballot item.
 @main_bp.route('/ballots/edititem', methods=['GET', 'POST'])
 @login_required
 def edititem():
@@ -1040,4 +1041,56 @@ def showitems():
         return sessionEnded(user)
 
     return ballotitems.showItems(user)
+
+# Add a ballot contest candidate.
+@main_bp.route('/candidates/addcandidate', methods=['GET', 'POST'])
+@login_required
+def addcandidate():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return candidates.addCandidate(user)
+
+# Edit a ballot contest candidate.
+@main_bp.route('/candidates/editcandidate', methods=['GET', 'POST'])
+@login_required
+def editcandidate():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return candidates.editCandidate(user)
+
+
+# Remove a ballot contest candidate.
+@main_bp.route('/candidates/removecandidate', methods=['GET', 'POST'])
+@login_required
+def removecandidate():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return candidates.removeCandidate(user)
 
