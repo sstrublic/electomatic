@@ -288,6 +288,7 @@ event locked = configdata[12]
 
           <ul class="dropdown-menu">
             {% if configdata[12] == false %}<li class="menuitem" ><a href="{{ url_for('main_bp.addcandidate') }}">Add Candidate</a></li>{% endif %}
+            {% if configdata[12] == false %}<li class="menuitem" ><a href="{{ url_for('main_bp.editcandidate') }}">Edit Candidate</a></li>{% endif %}
             {% if configdata[12] == false %}<li class="menuitem" ><a href="{{ url_for('main_bp.removecandidate') }}">Remove Candidate</a></li>{% endif %}
           </ul>
         </li>

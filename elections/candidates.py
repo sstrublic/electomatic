@@ -83,7 +83,7 @@ def addCandidate(user, details=None):
                     failed = False
 
                     # All fields must be populated.
-                    current_user.logger.debug("Adding a ballot item: Checking fields", indent=1)
+                    current_user.logger.debug("Adding a candidate: Checking fields", indent=1)
                     for field in entryfields:
                         if type(entryfields[field]['value']) is str and len(entryfields[field]['value']) == 0:
                             current_user.logger.flashlog("Add candidate failure", "Field '%s' cannot be empty." % entryfields[field]['text'])
@@ -148,12 +148,209 @@ def addCandidate(user, details=None):
 # Edit an existing candidate in a contest.
 def editCandidate(user):
     try:
+        # Since these buttons are in the form area on this page, we have to handle in code.
+        option = request.values.get('redirect')
+        if option is not None:
+            return redirect(url_for('main_bp.%s' % option))
+
+        if request.values.get('cancelbutton'):
+            current_user.logger.flashlog(None, "Edit candidate operation canceled.", 'info')
+            return redirect(url_for('main_bp.editcandidate'))
+
+        # Fetch all the ballot contests for this event.
+        outsql = '''SELECT *
+                    FROM ballotitems
+                    WHERE clubid='%d' AND eventid='%d' AND type='%d';
+                  ''' % (current_user.event.clubid, current_user.event.eventid,
+                         ITEM_TYPES.CONTEST.value)
+        _, data, _ = db.sql(outsql, handlekey=user)
+
+        contests = data[0]
+        if len(contests) == 0:
+            current_user.logger.flashlog("Edit candidate failure", "There are no ballot contests.")
+        else:
+            # Check if the event is locked.
+            if current_user.event.locked is True:
+                current_user.logger.flashlog("Editcandidate failure", "This Event is locked and cannot edit candidates.")
+                return redirect(url_for('main_bp.editcandidate'))
+
+        itemid = request.values.get('contest', None)
+        candidateid = request.values.get('candidateid', None)
+        search = request.values.get('namesearch', '')
+        candidate = None
+        candidates = None
+        contest = None
+
+        if candidateid is not None:
+            candidateid = candidateid.strip()
+
+        if len(search) == 0:
+            search = None
+        else:
+            search = search.strip().replace("'", "''")
+
+        # If the last name is provided, do a lookup and build a table to feed back to the form.
+        if candidateid is None and search is not None and len(search) > 0:
+            current_user.logger.debug("Editing a candidate: Searching by last name with '%s'" % search, indent=1)
+
+            # Special keyword - this lets the user see them all.
+            if search == '*':
+                searchclause = ""
+            else:
+                searchclause = "AND LOWER(candidates.lastname) LIKE '%s%%'" % search.lower()
+
+            outsql = '''SELECT candidates.*, ballotitems.name AS contest
+                        FROM candidates
+                        JOIN ballotitems ON ballotitems.eventid=candidates.eventid AND ballotitems.itemid=candidates.itemid
+                        WHERE candidates.clubid='%d' AND candidates.eventid='%d' AND candidates.itemid='%s' %s
+                        ORDER BY candidates.lastname ASC;
+                        ''' % (current_user.event.clubid, current_user.event.eventid, itemid, searchclause)
+            _, result , _ = db.sql(outsql, handlekey=current_user.get_userid())
+
+            # The return data is the first 'dbresults' in the list.
+            candidates = result[0]
+
+            if len(candidates) == 0:
+                current_user.logger.flashlog('Edit Candidate failure', "No Candidates with a last name matching '%s' were found." % search)
+                # Redirect to the edit page so we don't save the previous entry data.
+                return redirect(url_for('main_bp.editcandidate'))
+
+            # Fetch the contest (it is the same for all).
+            contest = candidates[0]['contest']
+
+        # If a candidate ID is specified, find them for the specified contest.
+        if candidateid is not None:
+            outsql = '''SELECT candidates.*, ballotitems.name AS contest
+                        FROM candidates
+                        JOIN ballotitems ON ballotitems.eventid=candidates.eventid AND ballotitems.itemid=candidates.itemid
+                        WHERE candidates.clubid='%d' AND candidates.eventid='%d' AND candidates.itemid='%s'
+                              AND candidates.id='%s';
+                     ''' % (current_user.event.clubid, current_user.event.eventid, itemid, candidateid)
+            _, data, _ = db.sql(outsql, handlekey=user)
+
+            candidate = data[0]
+
+            if len(candidate) == 0:
+                # Find the full name associated with this id.
+                fullname = None
+                for c in candidates:
+                    if c['id'] == candidateid:
+                        fullname = c['fullname']
+                        break
+
+                current_user.logger.flashlog("Edit candidate failure", "Candidate '%s' was not found for this Contest." % fullname)
+                return redirect(url_for('main_bp.editcandidate'))
+
+            candidate = candidate[0]
+
+            # Fetch the contest (it is the same for all).
+            contest = candidate['contest']
+
+            # A candidate cannot be edited if the ballot item has votes.
+            outsql = '''SELECT COUNT(id) AS votecount
+                        FROM votes
+                        WHERE clubid='%d' AND eventid='%d' AND itemid='%s';
+                     ''' % (current_user.event.clubid, current_user.event.eventid, itemid)
+            _, data, _ = db.sql(outsql, handlekey=user)
+
+            count = data[0][0]
+
+            if count['votecount'] > 0:
+                current_user.logger.flashlog("Edit candidate failure", "Ballot item '%s' has Votes and candidates cannot be changed." % contest)
+                return redirect(url_for('main_bp.editcandidate'))
+
+            saving = False
+            if request.values.get('savebutton'):
+                saving = True
+
+            if saving is True:
+                current_user.logger.debug("Editing a candidate: saving changes requested", indent=1)
+
+                # Entry fields.
+                entryfields = {'firstname': {"text": "First Name", "value": None},
+                            'lastname': {"text": "Last Name", "value": None}
+                            }
+
+                # Fetch field data.
+                for field in entryfields:
+                    value = request.values.get(field)
+
+                    # If no value, make it an empty string to simplify future display.
+                    if value is None:
+                        entryfields[field]['value'] = ''
+                    else:
+                        # Escape apostrophes.
+                        entryfields[field]['value'] = value.replace("'", "''").strip()
+
+                failed = False
+
+                # All fields must be populated.
+                current_user.logger.debug("Editing a candidate: Checking fields", indent=1)
+                for field in entryfields:
+                    if type(entryfields[field]['value']) is str and len(entryfields[field]['value']) == 0:
+                        current_user.logger.flashlog("Edit candidate failure", "Field '%s' cannot be empty." % entryfields[field]['text'])
+                        failed = True
+
+                if failed is False:
+                    # Verify changes.
+                    changed = False
+                    for field in entryfields:
+                        if candidate[field] != entryfields[field]['value']:
+                            changed = True
+
+                    if changed:
+                        # Fetch the fields into the candidate structure.
+                        for field in entryfields:
+                            candidate[field] = entryfields[field]['value']
+
+                        fullname = '%s %s' % (entryfields['firstname']['value'], entryfields['lastname']['value'])
+
+                        # Verify there are no other candidates for this ballot with the same name.
+                        outsql = '''SELECT *
+                                    FROM candidates
+                                    WHERE clubid='%d' AND eventid='%d' AND
+                                          itemid='%d' AND fullname='%s' AND id!='%d';
+                                    ''' % (current_user.event.clubid, current_user.event.eventid, candidate['itemid'], fullname, candidate['id'])
+                        _, data, _ = db.sql(outsql, handlekey=user)
+
+                        duplicates = data[0]
+                        if len(duplicates) > 0:
+                            current_user.logger.flashlog("Edit candidate failure", "Candidate '%s' is already entered for this contest." % fullname)
+                            failed = True
+
+                        if failed is False:
+                            # Add the candidate.
+                            outsql = '''UPDATE candidates
+                                        SET firstname='%s',
+                                            lastname='%s',
+                                            fullname='%s'
+                                        WHERE clubid='%d' AND eventid='%d' AND id='%d';
+                                    ''' % (entryfields['firstname']['value'], entryfields['lastname']['value'], fullname,
+                                           current_user.event.clubid, current_user.event.eventid, candidate['id'])
+                            _, _, err = db.sql(outsql, handlekey=current_user.get_userid())
+
+                            # On error to update the database, return and print out the error (like "System is in read only mode").
+                            if err is not None:
+                                current_user.logger.flashlog("Edit candidate failure", err)
+                            else:
+                                current_user.logger.flashlog(None, "Updated Candidate for ballot contest '%s':" % contest, 'info', propagate=True)
+                                current_user.logger.flashlog(None, "New Name: %s" % fullname, 'info', highlight=False, indent=True, propagate=True)
+
+                                current_user.logger.info("Edit candidate: Operation completed")
+                                return redirect(url_for('main_bp.editcandidate'))
+                    else:
+                        current_user.logger.flashlog(None, "Changes not saved (no changes made).")
+
 
         # If the candidate is a write-in candidate and the new candidate name exists,
         # ask if this is a consolidation attempt.
         # Names might be very similar for write-in candidates and adding their
         # votes only works if the names are the same.
-        pass
+
+        return render_template('candidates/editcandidate.html', user=user, admins=ADMINS[current_user.event.clubid],
+                                candidate=candidate, contests=contests, candidates=candidates,
+                                itemid=itemid, candidateid=candidateid, search=search, contest=contest,
+                                configdata=current_user.get_render_data())
 
     except Exception as e:
         current_user.logger.flashlog("Edit candidate failure", "Exception: %s" % str(e), propagate=True)
@@ -184,7 +381,6 @@ def removeCandidate(user):
             clear_session_flags()
             return redirect(url_for('main_bp.removecandidate'))
 
-
         # Fetch all the ballot contests for this event.
         outsql = '''SELECT *
                     FROM ballotitems
@@ -200,6 +396,7 @@ def removeCandidate(user):
             # Check if the event is locked.
             if current_user.event.locked is True:
                 current_user.logger.flashlog("Remove candidate failure", "This Event is locked and cannot remove candidates from ballots.")
+                return redirect(url_for('main_bp.removecandidate'))
 
         itemid = request.values.get('contest', None)
         candidateid = request.values.get('candidateid', None)
@@ -221,6 +418,7 @@ def removeCandidate(user):
 
         # If the last name is provided, do a lookup and build a table to feed back to the form.
         if candidateid is None and search is not None and len(search) > 0:
+            clear_session_flags()
             current_user.logger.debug("Removing a candidate: Searching by last name with '%s'" % search, indent=1)
 
             # Special keyword - this lets the user see them all.
@@ -287,7 +485,7 @@ def removeCandidate(user):
 
             if count['votecount'] > 0:
                 current_user.logger.flashlog("Remove candidate failure", "Ballot item '%s' has Votes and cannot be removed." % contest)
-                return redirect(url_for('main_bp.removeitem'))
+                return redirect(url_for('main_bp.removecandidate'))
 
             saving = False
 

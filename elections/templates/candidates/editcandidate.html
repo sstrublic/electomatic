@@ -1,0 +1,111 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Edit Contest Candidate</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <input type="hidden" id="classid" name="classid" value="{{classid}}">
+
+    <!-- If no entry yet taken, show this. -->
+    {% if itemid == None and search == None %}
+    <div>
+        <label class="candidate" title="The ballot contest to search." for="itemid">Contest:</label>
+        <select class="candidate-contest" id="contest" name="contest" autofocus>
+            {% for c in contests %}
+            <option value="{{c['itemid']}}" {% if c['itemid'] == itemid %} selected {% endif %}>{{c['name']}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label class="candidate" title="A partial last name of the Candidate to search for." for="namesearch">Last Name:</label>
+        <input class="candidate" id="namesearch" name="namesearch">
+        <div style="padding:10px;">
+            <button type="submit" id="candidatebutton">Submit</button>
+        </div>
+    </div>
+
+    {% elif search != None and itemid != None %}
+    <div>
+        <input type="hidden" id="namesearch" name="namesearch" value={{namesearch}}>
+
+        <label class="candidate" title="The ballot contest to search.">Contest:</label>
+        <span class="candidate-contest">{{contest}}</span><br><br>
+
+        <label class="candidate" title="Candidates.">Candidates:</label>
+        {% if candidates != None %}
+
+        {% for c in candidates %}
+            <span class="candidate-name">{{c['fullname']}}</span>
+            <br>
+            <label class="candidate" title="Candidates."></label>
+        {% endfor %}
+
+        {% endif %}
+    </div>
+    <div>
+        <input type="hidden" id="contest" name="contest" value="{{itemid}}">
+
+        <label class="candidate" title="Choose the Candidate to remove." for="candidateid">Candidate to Edit:</label>
+        <select class="candidate-contest" id="candidateid" name="candidateid" autofocus>
+            {% for c in candidates %}
+                <option value="{{c['id']}}">{{c['fullname']}}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+        <button type="submit" id="entrybutton">Submit</button>
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel" >Cancel</button>
+    </div>
+
+    {% else %}
+    <div>
+        <input type="hidden" id="contest" name="contest" value="{{itemid}}">
+        <input type="hidden" id="candidateid" name="candidateid" value="{{candidateid}}">
+
+        <label class="candidate" title="The ballot contest.">Contest:</label>
+        <span class="candidate-contest">{{contest}}</span><br><br>
+
+        <label class="candidate" title="The candidate's first name." for="firstname">First Name</label>
+        <input class="candidate-name" maxlength="64" type="text" id="firstname" name="firstname" value="{{candidate['firstname']}}"><br><br>
+        <label class="candidate" title="The candidate's last name." for="lastname">Last Name</label>
+        <input class="candidate-name" maxlength="64" type="text" id="lastname" name="lastname" value="{{candidate['lastname']}}"><br><br>
+
+        <br>
+
+        <!-- Controls. -->
+        <div>
+            <button type="submit" id="savebutton" name="savebutton" value="save">Submit</button>
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+
+    </div>
+
+    <br>
+
+    {% endif %}
+
+</form>
+
+{% include 'messages.html' %}
+
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}
