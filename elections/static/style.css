@@ -795,18 +795,42 @@ table.clubs th, table.events th {
     width: 90%;
 }
 
-.table-ballotitems-itemid, .table-ballotitems-positions, .table-ballotitems-writeins {
+.ballotitems-candidates {
+    width: 80%;
+}
+
+.ballotitems-candidates th, .ballotitems-candidates td {
+    font-size: 24px;
+}
+
+.candidates {
+    width: 65%;
+}
+
+.table-ballotitems-itemid {
+    width: 60px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.table-ballotitems-positions, .table-ballotitems-writeins {
+    width: 120px;
     min-width: 120px;
     text-align: center;
 }
 
 .table-ballotitems-type {
+    width: 100px;
     min-width: 100px;
     text-align: center;
 }
 
 .table-ballotitems-name {
     min-width: 200px;
+}
+
+.table-ballotitems-nameonly {
+    min-width: 300px;
 }
 
 .table-ballotitems-desc {
@@ -855,6 +879,23 @@ span.candidate-contest {
 span.candidate-name {
     font-size: 24px;
 }
+
+.table-ballotitems-candidates-itemid {
+    width: 70px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.table-ballotitems-candidaites-name {
+    min-width: 200px;
+}
+
+.table-ballotitems-candidates-positions, .table-ballotitems-candidates-writeins {
+    width: 150px;
+    min-width: 140px;
+    text-align: center;
+}
+
 
 /* Note: Design for a width of 768px */
 @media screen and (max-width: 767px) {
@@ -964,7 +1005,7 @@ span.candidate-name {
     }
 
     /* Max screen width */
-    .clubs, .events, .users {
+    .clubs, .events, .users, .ballotitems, .ballotitems-candidates {
         width: 99%;
     }
 
@@ -1236,22 +1277,29 @@ span.candidate-name {
     }
 
     .table-ballotitems-itemid {
+        width: 50px;
         min-width: 50px;
         text-align: center;
     }
 
     .table-ballotitems-positions, .table-ballotitems-writeins {
+        width: 90px;
         min-width: 90px;
         text-align: center;
     }
 
     .table-ballotitems-type {
+        width: 80px;
         min-width: 80px;
         text-align: center;
     }
 
     .table-ballotitems-name {
         min-width: 150px;
+    }
+
+    .table-ballotitems-nameonly {
+        min-width: 200px;
     }
 
     .table-ballotitems-desc {
@@ -1294,6 +1342,31 @@ span.candidate-name {
     span.candidate-name {
         font-size: 18px;
     }
+
+    .candidates {
+        width: 95%;
+    }
+
+    .ballotitems-candidates th, .ballotitems-candidates td {
+        font-size: 20px;
+    }
+
+    .table-ballotitems-candidates-itemid {
+        width: 70px;
+        min-width: 70px;
+        text-align: center;
+    }
+
+    .table-ballotitems-candidaites-name {
+        min-width: 200px;
+    }
+
+    .table-ballotitems-candidates-positions, .table-ballotitems-candidates-writeins {
+        width: 150px;
+        min-width: 140px;
+        text-align: center;
+    }
+
 }
 
 /* Note: Design for a width > 788px */
@@ -1526,7 +1599,7 @@ span.candidate-name {
         display:none;
     }
 
-    .ballotitems th {
+    .ballotitems th, .ballotitems-candidates th, .candidates th {
         background-color: #238360 !important;
         color: white !important;
     }
@@ -1537,5 +1610,9 @@ span.candidate-name {
 
     table tr:nth-child(odd) {
         background-color: #eaeeea !important;
+    }
+
+    .ballotitems-action {
+        display: none;
     }
 }

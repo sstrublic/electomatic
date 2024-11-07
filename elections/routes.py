@@ -1094,3 +1094,20 @@ def removecandidate():
 
     return candidates.removeCandidate(user)
 
+
+# Show ballot contest candidates.
+@main_bp.route('/candidates/showcandidates', methods=['GET', 'POST'])
+@login_required
+def showcandidates():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return candidates.showCandidates(user)

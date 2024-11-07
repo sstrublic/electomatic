@@ -1,0 +1,120 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user in admins %}
+<div class="page-content">
+{% else %}
+<div class="page-content-public">
+{% endif %}
+
+<div>
+<h1>
+    <b>Ballot Contest Candidates</b>
+</h1>
+</div>
+
+{% if user in admins %}
+<div class="page-interior">
+{% else %}
+<div class="page-interior-public">
+{% endif %}
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- Controls. -->
+    <div class="top-buttons">
+        <button type="button" id="printbutton" name="printbutton" value="print" onclick="printDiv('printableArea');">Print</button>
+    </div>
+
+    {% if user in admins %}
+    <div class="button-top-page-content" id="printableArea">
+    {% else %}
+    <div class="button-top-page-content-public" id="printableArea">
+    {% endif %}
+
+        {% if itemdata|length == 0 %}
+        <p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Ballot Contests to display.</span></p>
+        {% else %}
+
+        <table class="ballotitems-candidates" align="center">
+            <thead>
+            <tr>
+                <th class="table-ballotitems-candidates-itemid">ID</th>
+                <th class="table-ballotitems-candidates-name">Name</th>
+                <th class="table-ballotitems-candidates-positions">Positions</th>
+                <th class="table-ballotitems-candidates-writeins">Write-ins</th>
+            </tr>
+            </thead>
+
+            <!-- Show each row's data. -->
+            {% for i in itemdata %}
+                <tr>
+                    <td class="table-ballotitems-itemid" title="The Contest ID." style="font-weight:bold;" id="item{{i['itemid']}}" itemid="{{i['itemid']}}">
+                        {{i['itemid']}}
+                    </td>
+                    <td class="table-ballotitems-nameonly" title="The name of the ballot item.">{{i['name']}}</td>
+
+                    <td class="table-ballotitems-positions" title="The number of positions being chosen.">{{i['positions']}}</td>
+                    <td class="table-ballotitems-writeins"><input title="Write-in candidates are allowed." type="checkbox"{% if i['writeins'] == True %} checked {% endif %} disabled></td>
+                </tr>
+
+                <!-- Add a new table that has the candidates for this item.-->
+                 <table class="candidates" align="center">
+                    <thead>
+                        <tr>
+                            <th class="table-ballotitems-nameonly">Candidiate</th>
+                            <th class="table-ballotitems-writeins">Write-in</th>
+                            <th class="ballotitems-action" colspan="2">Actions</th>
+                        </tr>
+                    </thead>
+
+                    {% for c in i['candidates'] %}
+                    <tr>
+                        <td class="table-ballotitems-nameonly" title="The candidate's name.">{{c['fullname']}}</td>
+                        <td class="table-ballotitems-writeins"><input title="This is a write-in candidate." type="checkbox"{% if c['writein'] == True %} checked {% endif %} disabled></td>
+                        <td class="ballotitems-action"><button type="submit" id="edit_{{c['id']}}" name="edit_{{c['id']}}" value="{{c['id']}}">Edit</td>
+                        <td class="ballotitems-action"><button type="submit" id="remove_{{c['id']}}" name="remove_{{c['id']}}" value="{{c['id']}}">Remove</td>
+                    </tr>
+                    {% endfor %}
+                    </table>
+            {% endfor %}
+        </table>
+
+        {% endif %}
+
+        {% include 'messages.html' %}
+
+        <!-- If the event is locked, then nothing can be done. -->
+        {% if configdata[12] == False %}
+
+        {% if user != None and user in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="addcandidate" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Candidate</button>
+        </div>
+        <br>
+        {% endif %}
+
+        {% endif %}
+
+        {% if user != None and user not in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="index" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Home</button>
+        </div>
+        <br>
+        {% endif %}
+
+    </div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

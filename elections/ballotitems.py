@@ -129,10 +129,23 @@ def showItem(user):
         itemdata = itemdata[0]
         itemdata['typestr'] = ITEM_TYPES_DICT[itemdata['type']]
 
+        # Fetch any candidates for this contest.
+        candidates = {}
+        if itemdata['type'] == ITEM_TYPES.CONTEST.value:
+            outsql = '''SELECT *
+                        FROM candidates
+                        WHERE clubid='%d' AND eventid='%d' AND itemid='%s'
+                        ORDER BY candidates.lastname ASC;
+                        ''' % (current_user.event.clubid, current_user.event.eventid, itemid)
+            _, result , _ = db.sql(outsql, handlekey=current_user.get_userid())
+
+            # The return data is the first 'dbresults' in the list.
+            candidates = result[0]
+
         current_user.logger.info("Showing ballot item %d: Operation completed" % itemid)
 
         return render_template('ballots/showitem.html', user=user, admins=ADMINS[current_user.event.clubid],
-                                itemdata=itemdata,
+                                itemdata=itemdata, candidates=candidates,
                                 itemid=itemid,
                                 configdata=current_user.get_render_data())
 

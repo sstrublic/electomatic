@@ -37,10 +37,21 @@
         <input class="ballotitem-name" maxlength="64" type="text" id="name" name="name" value="{{itemdata['name']}}" disabled><br><br>
 
         <label class="ballotitem" title="Describes the ballot item." for="description">Item Description</label><br>
-            <div class="ballotitem-textarea">
-        <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description" disabled>{{itemdata['description']}}</textarea>
+        <div class="ballotitem-textarea">
+            <textarea class="ballotitem-desc" maxlength="1024" rows="5" cols="80" id="description" name="description" disabled>{{itemdata['description']}}</textarea>
         </div>
-        <br><br>
+        <br>
+
+        {% if candidates|length > 0 %}
+        <label class="candidate" title="Candidates.">Candidates:</label>
+
+        {% for c in candidates %}
+            <span class="candidate-name">{{c['fullname']}} {% if c['writeins'] == True %}(write-in){% endif %}</span>
+            <br>
+            <label class="candidate" title="Candidates."></label>
+        {% endfor %}
+
+        {% endif %}
     </div>
 
     {% endif %} <!-- event locked -->

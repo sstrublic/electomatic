@@ -13,7 +13,78 @@ from flask_login import current_user
 from elections import db, app
 from elections import ADMINS
 
-from elections.ballotitems import ITEM_TYPES
+from elections.ballotitems import ITEM_TYPES, ITEM_TYPES_DICT
+
+# Show candidates for ballot contests.
+def showCandidates(user):
+    try:
+        # Since these buttons are in the form area on this page, we have to handle in code.
+        option = request.values.get('redirect')
+        if option is not None:
+            return redirect(url_for('main_bp.%s' % option))
+
+        current_user.logger.info("Displaying: Show ballot items")
+
+        # Fetch all of the ballot contests, ordered by ID.
+        current_user.logger.debug("Showing ballot items: Fetching ballot items", indent=1)
+
+        outsql = ['''SELECT *
+                    FROM ballotitems
+                    WHERE clubid='%d' AND eventid='%d' AND type='%d'
+                    ORDER BY itemid ASC;
+                    ''' % (current_user.event.clubid, current_user.event.eventid, ITEM_TYPES.CONTEST.value)]
+        outsql.append('''SELECT *
+                        FROM candidates
+                        WHERE clubid='%d' AND eventid='%d'
+                        ORDER BY itemid ASC, lastname ASC;
+                      ''' % (current_user.event.clubid, current_user.event.eventid))
+        _, data, _ = db.sql(outsql, handlekey=user)
+
+        itemdata = data[0]
+        candidates = data[1]
+
+        # Redirect to candidate actions.
+        for c in candidates:
+            editselect = request.values.get("edit_%d" % c['id'], None)
+            removeselect = request.values.get("remove_%d" % c['id'], None)
+
+            if editselect is not None:
+                current_user.logger.info("Showing ballot contest candidates: Editing candidate '%s' (%s)" %  (c['id'], c['fullname']))
+
+                # Redirect to the edit page for that item.
+                return redirect(url_for('main_bp.editcandidate', contest=c['itemid'], candidateid=c['id']))
+
+            if removeselect is not None:
+                current_user.logger.info("Showing ballot contest candidates: Removing candidate '%s' (%s)" %  (c['id'], c['fullname']))
+
+                # Redirect to the remove page for that item.
+                return redirect(url_for('main_bp.removecandidate', contest=c['itemid'], candidateid=c['id']))
+
+
+        # Add candidates to each contest.
+        for i in itemdata:
+            i['typestr'] = ITEM_TYPES_DICT[i['type']]
+            i['candidates'] = []
+
+            for c in candidates:
+                if c['itemid'] == i['itemid']:
+                    i['candidates'].append(c)
+
+        current_user.logger.info("Showing ballot contest candidates: Operation completed")
+
+        return render_template('candidates/showcandidates.html', user=user, admins=ADMINS[current_user.event.clubid],
+                                itemdata=itemdata,
+                                configdata=current_user.get_render_data())
+
+
+    except Exception as e:
+        current_user.logger.flashlog("Show candidates failure", "Exception: %s" % str(e), propagate=True)
+        current_user.logger.error("Unexpected exception:")
+        current_user.logger.error(traceback.format_exc())
+
+        # Redirect to the main page to display the exception and prevent recursive loops.
+        return redirect(url_for('main_bp.index'))
+
 
 # Add a candidate to a contest.
 # If details are provided, use them instead of a form-based operation.
@@ -541,22 +612,6 @@ def removeCandidate(user):
 
     except Exception as e:
         current_user.logger.flashlog("Remove candidate failure", "Exception: %s" % str(e), propagate=True)
-        current_user.logger.error("Unexpected exception:")
-        current_user.logger.error(traceback.format_exc())
-
-        # Redirect to the main page to display the exception and prevent recursive loops.
-        return redirect(url_for('main_bp.index'))
-
-
-# Show all candidates for a contest.
-def showCandidates(user):
-    try:
-        # Show the list of contest ballot items and provide a 'show' button for all candidates in
-        # that contest.  The list is displayed dynamically.  This is not the results of the contest.
-        pass
-
-    except Exception as e:
-        current_user.logger.flashlog("Show candidates failure", "Exception: %s" % str(e), propagate=True)
         current_user.logger.error("Unexpected exception:")
         current_user.logger.error(traceback.format_exc())
 
