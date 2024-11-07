@@ -30,6 +30,7 @@ import elections.logdata as logdata
 import elections.docs as docs
 import elections.ballotitems as ballotitems
 import elections.candidates as candidates
+import elections.voters as voters
 
 from elections.log import AppLog
 
@@ -981,6 +982,7 @@ def additem():
 
     return ballotitems.addItem(user)
 
+
 # Edit a ballot item.
 @main_bp.route('/ballots/edititem', methods=['GET', 'POST'])
 @login_required
@@ -1042,6 +1044,7 @@ def showitems():
 
     return ballotitems.showItems(user)
 
+
 # Add a ballot contest candidate.
 @main_bp.route('/candidates/addcandidate', methods=['GET', 'POST'])
 @login_required
@@ -1058,6 +1061,7 @@ def addcandidate():
         return unauthorized()
 
     return candidates.addCandidate(user)
+
 
 # Edit a ballot contest candidate.
 @main_bp.route('/candidates/editcandidate', methods=['GET', 'POST'])
@@ -1111,3 +1115,75 @@ def showcandidates():
         return unauthorized()
 
     return candidates.showCandidates(user)
+
+
+# Add an event voter.
+@main_bp.route('/voters/addvoter', methods=['GET', 'POST'])
+@login_required
+def addvoter():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return voters.addVoter(user)
+
+
+# Edit an event voter.
+@main_bp.route('/voters/editvoter', methods=['GET', 'POST'])
+@login_required
+def editvoter():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return voters.editVoter(user)
+
+
+# Remove an event voter.
+@main_bp.route('/voters/removevoter', methods=['GET', 'POST'])
+@login_required
+def removevoter():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return voters.removeVoter(user)
+
+
+# Show event voters.
+@main_bp.route('/voters/showvoters', methods=['GET', 'POST'])
+@login_required
+def showvoters():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return voters.showVoters(user)

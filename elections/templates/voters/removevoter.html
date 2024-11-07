@@ -1,0 +1,63 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Remove Event Voter</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[12] == False %}
+    <div>
+        <label class="voter" title="The voter's first name." for="firstname">First Name</label>
+        <input class="voter-name" maxlength="64" type="text" id="firstname" name="firstname" value="{{voter['firstname']}}" disabled><br><br>
+        <label class="voter" title="The voter's last name." for="lastname">Last Name</label>
+        <input class="voter-name" maxlength="64" type="text" id="lastname" name="lastname" value="{{voter['lastname']}}" disabled><br><br>
+
+        <label class="voter" title="The voter's Vote ID.  The Vote ID cannot be modified." for="voteid">Vote ID</label>
+        <span class="voter-voteid">{{voter['voteid']}}</span><br><br>
+
+        <!-- Controls. -->
+        <div style="padding:10px;">
+            {% if delete_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="delete">Submit</button>
+            {% elif confirm_request == False %}
+            <button type="submit" id="savebutton" name="savebutton" value="confirm">Confirm</button>
+            {% else %}
+            <button type="submit" id="savebutton" name="savebutton" value="save">Delete Voter</button>
+            {% endif %}
+            <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+        </div>
+    </div>
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+<!-- If the event is locked, then nothing can be done. -->
+<div align="center" style="padding:20px;">
+    {% if configdata[12] == False %}
+    <a href="{{ url_for('main_bp.showvoters') }}"><button class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Voters</button></a>
+    {% endif %}
+</div>
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

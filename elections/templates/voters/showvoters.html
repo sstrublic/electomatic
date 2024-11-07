@@ -1,0 +1,98 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user in admins %}
+<div class="page-content">
+{% else %}
+<div class="page-content-public">
+{% endif %}
+
+<div>
+<h1>
+    <b>Event Voters</b>
+</h1>
+</div>
+
+{% if user in admins %}
+<div class="page-interior">
+{% else %}
+<div class="page-interior-public">
+{% endif %}
+
+<form action="" role="form" method="post" enctype="multipart/form-data">
+    <!-- Controls. -->
+    <div class="top-buttons">
+        <button type="button" id="printbutton" name="printbutton" value="print" onclick="printDiv('printableArea');">Print</button>
+    </div>
+
+    {% if user in admins %}
+    <div class="button-top-page-content" id="printableArea">
+    {% else %}
+    <div class="button-top-page-content-public" id="printableArea">
+    {% endif %}
+
+        {% if voterdata|length == 0 %}
+        <p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Event Voters to display.</span></p>
+        {% else %}
+
+        <table class="voters" align="center">
+            <thead>
+            <tr>
+                <th class="table-voters-name">Name</th>
+                <th class="table-voters-voteid">Vote ID</th>
+                <th class="table-voters-voted">Voted</th>
+                <th class="voters-action" colspan="2">Actions</th>
+            </tr>
+            </thead>
+
+            <!-- Show each row's data. -->
+            {% for v in voterdata %}
+                <tr>
+                    <td class="table-voters-name" title="The voter's name.">{{v['fullname']}}</td>
+                    <td class="table-voters-voteid" title="The voter's Vote ID.">{{v['voteid']}}</td>
+                    <td class="table-voters-voted"><input title="Tis voter has voted in this Event." type="checkbox"{% if v['voted'] == True %} checked {% endif %} disabled></td>
+                    <td class="voters-action"><button type="submit" id="edit_{{v['id']}}" name="edit_{{v['id']}}" value="{{v['id']}}">Edit</td>
+                    <td class="voters-action"><button type="submit" id="remove_{{v['id']}}" name="remove_{{v['id']}}" value="{{v['id']}}">Remove</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% endif %}
+
+        {% include 'messages.html' %}
+
+        <!-- If the event is locked, then nothing can be done. -->
+        {% if configdata[12] == False %}
+
+        {% if user != None and user in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="addvoter" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Voter</button>
+        </div>
+        <br>
+        {% endif %}
+
+        {% endif %}
+
+        {% if user != None and user not in admins %}
+        <div align="center" style="padding:20px;">
+            <button type="submit" id="redirect" name="redirect" value="index" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Home</button>
+        </div>
+        <br>
+        {% endif %}
+
+    </div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

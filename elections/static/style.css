@@ -705,9 +705,10 @@ input.title {
     width: 400px;
 }
 
-.table-clubs-info, .table-events-info, .users-action, .ballotitems-action {
+.table-clubs-info, .table-events-info, .users-action, .ballotitems-action, .voters-action {
     text-align: center;
     width: 100px;
+    min-width: 100px;
 }
 
 .table-clubs-desc, .table-events-desc {
@@ -742,7 +743,7 @@ input.clubdesc {
 }
 
 label.search, label.user, label.club, label.event, label.eventtitle,
-label.ballotitem, label.candidate {
+label.ballotitem, label.candidate, label.voter {
     width: 270px;
 }
 
@@ -896,6 +897,30 @@ span.candidate-name {
     text-align: center;
 }
 
+.voters {
+    width: 65%;
+}
+
+.table-voters-name {
+    min-width: 250px;
+}
+
+.table-voters-voteid {
+    width: 150px;
+    min-width: 150px;
+    text-align: center;
+}
+
+.table-voters-voted {
+    width: 80px;
+    min-width: 80px;
+    text-align: center;
+}
+
+span.voter-voteid {
+    font-weight: bold;
+    font-size: 24px;
+}
 
 /* Note: Design for a width of 768px */
 @media screen and (max-width: 767px) {
@@ -1005,7 +1030,7 @@ span.candidate-name {
     }
 
     /* Max screen width */
-    .clubs, .events, .users, .ballotitems, .ballotitems-candidates {
+    .clubs, .events, .users, .ballotitems, .ballotitems-candidates, .voters {
         width: 99%;
     }
 
@@ -1214,6 +1239,11 @@ span.candidate-name {
 	    border-bottom: 1px solid #CCC;
     }
 
+    label.search, label.user, label.club, label.event, label.eventtitle,
+    label.ballotitem, label.candidate, label.voter {
+        width: 200px;
+    }
+
     input.search, input.user {
         margin-bottom: 2px;
         width: 200px;
@@ -1265,8 +1295,9 @@ span.candidate-name {
         text-align: center;
     }
 
-    .table-clubs-info, .table-events-info, .ballotitems-action {
-        min-width: 90px;
+    .table-clubs-info, .table-events-info, .ballotitems-action, .voters-action {
+        width: 80px;
+        min-width: 80px;
     }
 
     span.ballotitem {
@@ -1365,6 +1396,27 @@ span.candidate-name {
         width: 150px;
         min-width: 140px;
         text-align: center;
+    }
+
+    .table-voters-name {
+        min-width: 200px;
+    }
+
+    .table-voters-voteid {
+        width: 120px;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .table-voters-voted {
+        width: 70px;
+        min-width: 70px;
+        text-align: center;
+    }
+
+    span.voter-voteid {
+        font-weight: bold;
+        font-size: 18px;
     }
 
 }

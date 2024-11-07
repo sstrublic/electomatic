@@ -152,7 +152,7 @@ CREATE TABLE voters (
     firstname VARCHAR NOT NULL,
     lastname VARCHAR NOT NULL,
     fullname VARCHAR NOT NULL,
-    voteid INTEGER NOT NULL,
+    voteid VARCHAR NOT NULL,
     voted BOOLEAN NOT NULL DEFAULT false,
     UNIQUE(clubid, eventid, fullname),
     UNIQUE(clubid, eventid, voteid)

@@ -23,10 +23,10 @@ def showCandidates(user):
         if option is not None:
             return redirect(url_for('main_bp.%s' % option))
 
-        current_user.logger.info("Displaying: Show ballot items")
+        current_user.logger.info("Displaying: Show ballot candidiates")
 
         # Fetch all of the ballot contests, ordered by ID.
-        current_user.logger.debug("Showing ballot items: Fetching ballot items", indent=1)
+        current_user.logger.debug("Showing ballot contest candidates: Fetching ballot items and candidates", indent=1)
 
         outsql = ['''SELECT *
                     FROM ballotitems
@@ -226,7 +226,7 @@ def editCandidate(user):
 
         if request.values.get('cancelbutton'):
             current_user.logger.flashlog(None, "Edit candidate operation canceled.", 'info')
-            return redirect(url_for('main_bp.editcandidate'))
+            return redirect(url_for('main_bp.showcandidates'))
 
         # Fetch all the ballot contests for this event.
         outsql = '''SELECT *
@@ -239,11 +239,12 @@ def editCandidate(user):
         contests = data[0]
         if len(contests) == 0:
             current_user.logger.flashlog("Edit candidate failure", "There are no ballot contests.")
+            return redirect(url_for('main_bp.showcandidates'))
         else:
             # Check if the event is locked.
             if current_user.event.locked is True:
                 current_user.logger.flashlog("Editcandidate failure", "This Event is locked and cannot edit candidates.")
-                return redirect(url_for('main_bp.editcandidate'))
+                return redirect(url_for('main_bp.showcandidates'))
 
         itemid = request.values.get('contest', None)
         candidateid = request.values.get('candidateid', None)
@@ -412,6 +413,11 @@ def editCandidate(user):
                     else:
                         current_user.logger.flashlog(None, "Changes not saved (no changes made).")
 
+            if failed is True:
+                # Fetch the fields into the candidate structure to preserve the faulty edit.
+                for field in entryfields:
+                    candidate[field] = entryfields[field]['value']
+
 
         # If the candidate is a write-in candidate and the new candidate name exists,
         # ask if this is a consolidation attempt.
@@ -463,11 +469,12 @@ def removeCandidate(user):
         contests = data[0]
         if len(contests) == 0:
             current_user.logger.flashlog("Remove candidate failure", "There are no ballot contests.")
+            return redirect(url_for('main_bp.showcandidates'))
         else:
             # Check if the event is locked.
             if current_user.event.locked is True:
                 current_user.logger.flashlog("Remove candidate failure", "This Event is locked and cannot remove candidates from ballots.")
-                return redirect(url_for('main_bp.removecandidate'))
+                return redirect(url_for('main_bp.showcandidates'))
 
         itemid = request.values.get('contest', None)
         candidateid = request.values.get('candidateid', None)

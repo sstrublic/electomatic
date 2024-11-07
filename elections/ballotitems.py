@@ -351,6 +351,9 @@ def editItem(user):
             return redirect(url_for('main_bp.%s' % option))
 
         itemid = request.values.get('itemid', None)
+        if itemid is None:
+            current_user.logger.flashlog("Edit ballot item failure", "Item ID must be specified.")
+            return redirect(url_for('main_bp.showitems'))
 
         if request.values.get('cancelbutton'):
             try:
@@ -620,7 +623,7 @@ def removeItem(user):
 
         itemdata = data[0]
         if len(itemdata) == 0:
-            current_user.logger.flashlog("Remove ballot item failure", "item ID %d not found'." % itemid)
+            current_user.logger.flashlog("Remove ballot item failure", "Item ID %d not found'." % itemid)
             return redirect(url_for('main_bp.showitems'))
 
         itemdata = itemdata[0]
