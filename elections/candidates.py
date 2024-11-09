@@ -340,7 +340,7 @@ def editCandidate(user):
 
                 # Entry fields.
                 entryfields = {'firstname': {"text": "First Name", "value": None},
-                            'lastname': {"text": "Last Name", "value": None}
+                               'lastname': {"text": "Last Name", "value": None}
                             }
 
                 # Fetch field data.

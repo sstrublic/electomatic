@@ -31,6 +31,7 @@ import elections.docs as docs
 import elections.ballotitems as ballotitems
 import elections.candidates as candidates
 import elections.voters as voters
+import elections.votes as votes
 
 from elections.log import AppLog
 
@@ -1187,3 +1188,39 @@ def showvoters():
         return unauthorized()
 
     return voters.showVoters(user)
+
+
+# Add a vote for an event.
+@main_bp.route('/voter/addvote', methods=['GET', 'POST'])
+@login_required
+def addvote():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return votes.addVote(user)
+
+
+# Remove a vote from an event.
+@main_bp.route('/voter/removevote', methods=['GET', 'POST'])
+@login_required
+def removevote():
+    user = current_user.get_id()
+
+    # Generic catchall in case the current user has been invalidated.
+    if current_user.is_active is False:
+        return sessionEnded(user)
+
+    clubid = current_user.clubid
+
+    if user not in ADMINS[clubid]:
+        return unauthorized()
+
+    return votes.removeVote(user)

@@ -1,0 +1,118 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div>
+<h1>
+    <b>Enter Event Vote</b>
+</h1>
+</div>
+
+<div class="page-interior">
+
+<form action="" role="form" method="post">
+
+    <!-- If the event is locked, then nothing can be done. -->
+    {% if configdata[12] == False %}
+
+    <!-- If no entry yet taken, show this. -->
+    {% if voterid == None %}
+    <div>
+        <label class="voter" title="The unique Voter ID." for="voterid">Voter ID:</label>
+
+        <input class="voterid" type="tel" minlength="10" maxlength="10" id="voterid" name="voterid" autofocus>
+        <button type="submit" id="entrybutton" disabled>Submit</button>
+    </div>
+
+    {% else %}
+    <!-- With a voter ID, show it as non-input (hidden). -->
+    <div>
+        <input type="hidden" id="voterid" name="voterid" value="{{voterid}}">
+
+        <label class="voter" title="The unique Voter ID." for="voterid">Voter ID</label>
+        <span class="voter-voteid">{{voterid}}</span><br>
+
+        <label class="voter" title="The Voter's name." for="votername">Voter Name</label>
+        <span class="voter-voteid">{{voter['fullname']}}</span><br><br>
+
+        <!-- Show the ballots and allow the voter to select. -->
+         {% for b in ballotitems %}
+            <span class="vote-itemname">{% if b['type'] == 1 %}Contest:{% else %}Question:{% endif %} {{b['name']}}</span>
+            <br><br>
+            <span class="vote-item">Description:</span>
+            <br>
+            <div class="ballotitem-textarea">
+                <textarea class="ballotitem-desc" maxlength="1024" cols="80" id="description_{{b['itemid']}}" name="description_{{b['itemid']}}" disabled onload="auto_grow(this);">{{b['description']}}</textarea>
+                <script type="text/javascript">
+                    auto_grow(document.getElementById("description_{{b['itemid']}}"));
+                </script>
+            </div>
+
+            {% if b['type'] == 1 %}
+                <span class="vote-item">Candidates (Vote For No More Than {{b['positions']}}):</span><br>
+                <div class="vote-item">
+                    <table class="vote-candidates">
+                    {% for c in candidates[b['itemid']] %}
+                    <tr><td>
+                        {% if c['new'] == False %}
+                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
+                        <label class="vote-candidate">{{c['fullname']}}{% if c['writein'] == True %} (write-in candidate){% endif %}</label>
+                        {% else %}
+                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
+                        <label class="vote-candidate">
+                            <input class="vote-candidate" type="text" minlength='1' maxlength="64" id="writein_{{b['itemid']}}_{{c['id']}}" name="writein_{{b['itemid']}}_{{c['id']}}">
+                        </label>
+                        {% endif %}
+                    </td></tr>
+                    {% endfor %}
+                    </table>
+                </div>
+            {% elif b['type'] == 2 %}
+                <div class="vote-item">
+                    <table class="vote-questions">
+                        <tr><td>
+                            <input class="vote-question" type="radio" id="yes" name="question_{{b['itemid']}}" value="Yes">
+                            <label class="vote-question" for="yes">Yes</label><br>
+                        </td></tr>
+                        <tr><td>
+                            <input class="vote-question" type="radio" id="no" name="question_{{b['itemid']}}" value="No">
+                            <label class="vote-question" for="no">No</label><br>
+                        </td></tr>
+                    </table>
+                </div>
+            {% endif %}
+            <br><br>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Cancel the transaction. -->
+    <div style="padding:10px;">
+        <button type="submit" id="confirm" name="confirm" value="confirm" value="confirm" disabled style="pointer-events: none;" \
+                onclick="enableSubmit(event);" onfocus="setSubmitState(false);">Confirm Entries</button>
+        <button type="submit" id="savebutton" name="savebutton" value="save" disabled style="pointer-events: none;">Submit</button>
+        <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
+    </div>
+    {% endif %}
+
+    {% endif %} <!-- event locked -->
+</form>
+
+{% include 'messages.html' %}
+
+<br>
+
+</div>
+
+</div>
+
+{% endblock %}

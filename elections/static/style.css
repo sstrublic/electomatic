@@ -862,10 +862,14 @@ input.ballotitem-name {
 }
 
 textarea.ballotitem-desc {
+    border: none;
     margin-bottom: 2px;
     padding-left: 10px;
     font-size: 18px;
     display: inline-block;
+    min-height: 40px;
+    max-height: 200px;
+    resize: none;
 }
 
 div.ballotitem-textarea {
@@ -887,7 +891,7 @@ span.candidate-name {
     text-align: center;
 }
 
-.table-ballotitems-candidaites-name {
+.table-ballotitems-candidates-name {
     min-width: 200px;
 }
 
@@ -920,6 +924,65 @@ span.candidate-name {
 span.voter-voteid {
     font-weight: bold;
     font-size: 24px;
+}
+
+span.vote-voteid {
+    font-weight: bold;
+    font-size: 24px;
+    padding-left: 20px;
+}
+
+span.vote-itemname {
+    font-weight: bold;
+    font-size: 28px;
+    padding-left: 20px;
+}
+
+span.vote-item {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 20px;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+table.vote-candidates td {
+    padding-left: 20px;
+}
+
+table.vote-candidates, table.vote-questions {
+    border: 2px solid black;
+}
+
+table.vote-questions td {
+    padding-left: 20px;
+}
+
+input.vote-candidate[type="text"] {
+    width: 400px;
+}
+
+input.vote-candidate[type="checkbox"]:hover {
+    outline: 3px solid yellow;
+}
+
+input.vote-question[type="radio"] {
+    width: 24px;
+    height: 24px;
+}
+
+input.vote-question[type="radio"]:hover {
+    outline: 3px solid yellow;
+}
+
+label.vote-candidate, label.vote-question {
+    font-size: 24px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.vote-item {
+    padding-left: 40px;
 }
 
 /* Note: Design for a width of 768px */
@@ -1354,11 +1417,14 @@ span.voter-voteid {
     }
 
     textarea.ballotitem-desc {
+        border: none;
         margin-bottom: 2px;
         padding-left: 10px;
         font-size: 16px;
         display: inline-block;
         width: 600px;
+        min-height: 80px;
+        max-height: 400px;
     }
 
     div.ballotitem-textarea {

@@ -218,12 +218,18 @@ window.onkeyup = function(event) {
       document.getElementById("userbutton").disabled = true;
     }
 
+    /* Only adding entrants uses a class ID entry field. */
+    else if (elementname == "voterid") {
+      document.getElementById(elementname).value = "";
+      document.getElementById("entrybutton").disabled = true;
+    }
+
     /* Push the cancel button. */
     document.getElementById("cancelbutton").click();
 
   } else {
     /* All pages with an entry ID use this field. */
-    if ((elementname == "namesearch") || elementname == "username") {
+    if ((elementname == "namesearch") || (elementname == "username") || (elementname == 'voterid')) {
       if (element.value.length == 0) {
         document.getElementById("entrybutton").disabled = true;
       }
@@ -238,7 +244,7 @@ window.onkeydown = function(event) {
   var element = document.getElementById(elementname);
 
   /* All pages with an entry ID use this field. */
-  if ((elementname == "clubid")|| (elementname == "namesearch")) {
+  if ((elementname == "clubid") || (elementname == "namesearch") || (elementname == 'voterid')) {
     if (element.value.length > -1) {
       document.getElementById("entrybutton").disabled = false;
     }
@@ -280,4 +286,9 @@ function showBallotItemFields() {
   document.getElementById("writeins").hidden = hidden;
   document.getElementById("writeinsspacer1").hidden = hidden;
   document.getElementById("writeinsspacer2").hidden = hidden;
+}
+
+function auto_grow(element) {
+  element.style.height = "5px";
+  element.style.height = (element.scrollHeight + 20) + "px";
 }

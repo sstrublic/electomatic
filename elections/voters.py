@@ -85,7 +85,7 @@ def addVoter(user):
 
         # Check if the event is locked.
         if current_user.event.locked is True:
-            current_user.logger.flashlog("Add voter failure", "This Event is locked and cannot add voters to voters.")
+            current_user.logger.flashlog("Add voter failure", "This Event is locked and cannot add voters.")
 
         else:
             # If saving the information, set this for later.
