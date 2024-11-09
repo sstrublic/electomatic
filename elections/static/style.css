@@ -959,7 +959,7 @@ table.vote-questions td {
 }
 
 input.vote-candidate[type="text"] {
-    width: 400px;
+    width: 500px;
 }
 
 input.vote-candidate[type="checkbox"]:hover {
@@ -979,6 +979,7 @@ label.vote-candidate, label.vote-question {
     font-size: 24px;
     padding-left: 20px;
     padding-right: 20px;
+    margin-top: 4px;
 }
 
 .vote-item {

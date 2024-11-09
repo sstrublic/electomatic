@@ -63,9 +63,11 @@
                     {% for c in candidates[b['itemid']] %}
                     <tr><td>
                         {% if c['new'] == False %}
+                        <!-- Existing candidate entries. -->
                         <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
-                        <label class="vote-candidate">{{c['fullname']}}{% if c['writein'] == True %} (write-in candidate){% endif %}</label>
+                        <label class="vote-candidate">{{c['fullname']}}</label>
                         {% else %}
+                        <!-- new write-in candidate entries. -->
                         <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
                         <label class="vote-candidate">
                             <input class="vote-candidate" type="text" minlength='1' maxlength="64" id="writein_{{b['itemid']}}_{{c['id']}}" name="writein_{{b['itemid']}}_{{c['id']}}">
@@ -97,7 +99,7 @@
 
     <!-- Cancel the transaction. -->
     <div style="padding:10px;">
-        <button type="submit" id="confirm" name="confirm" value="confirm" value="confirm" disabled style="pointer-events: none;" \
+        <button type="submit" id="confirm" name="confirm" value="confirm" value="confirm" \
                 onclick="enableSubmit(event);" onfocus="setSubmitState(false);">Confirm Entries</button>
         <button type="submit" id="savebutton" name="savebutton" value="save" disabled style="pointer-events: none;">Submit</button>
         <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
