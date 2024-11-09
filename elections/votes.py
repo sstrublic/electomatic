@@ -52,9 +52,10 @@ def addVote(user, voterid=None):
         voter = None
         ballotitems = None
         candidates = None
+        answers = None
 
         if voterid is not None:
-            current_user.logger.info("Adding a vote: voter ID '%s'" % voterid)
+            current_user.logger.debug("Adding a vote: voter ID '%s'" % voterid)
 
             # Find the vote ID in the voter table for this event.
             outsql = '''SELECT *
@@ -73,7 +74,7 @@ def addVote(user, voterid=None):
             if voter['voted'] is True:
                 return return_err("Vote ID '%s' has already voted." % voterid, 'main_bp.addvote')
 
-            current_user.logger.info("Adding a vote: Fetching ballot items and candidates")
+            current_user.logger.debug("Adding a vote: Fetching ballot items and candidates")
 
             # Fetch all the ballots and candidates for contests.
             outsql = ['''SELECT *
@@ -102,7 +103,7 @@ def addVote(user, voterid=None):
                 else:
                     candidates[itemid].append(c)
 
-            current_user.logger.info("Adding a vote: Parsing ballot items")
+            current_user.logger.debug("Adding a vote: Parsing ballot items")
 
             # Append N write-in candidates (N = number of ballot item positions).
             for b in ballotitems:
@@ -134,8 +135,9 @@ def addVote(user, voterid=None):
                 # Walk through the ballot items and extract the results.
                 answers = {}
                 failed = False
+                error = False
 
-                current_user.logger.info("Adding a vote: Fetching answers")
+                current_user.logger.debug("Adding a vote: Fetching answers")
 
                 for b in ballotitems:
                     itemid = b['itemid']
@@ -146,11 +148,18 @@ def addVote(user, voterid=None):
 
                             answer = request.values.get('contest_%d_%s' % (itemid, candidateid), None)
                             if answer is not None:
+                                # The candidate was selected.
+                                c['selected'] = True
+
                                 if c['new'] is True:
                                     # Fetch the name.
                                     name = request.values.get('writein_%d_%s' % (itemid, candidateid), None)
                                     if name is None or len(name) == 0:
-                                        current_user.logger.flashlog("Add vote failure", "A selected write-in candidate name cannot be empty.")
+                                        if error is False:
+                                            current_user.logger.flashlog("Add vote failure", "Error in Contest '%s':" % b['name'], large=True)
+                                            error = True
+
+                                        current_user.logger.flashlog("Add vote failure", "A selected write-in candidate name cannot be empty.", indent=True)
                                         failed = True
                                     else:
                                         c['firstname'], c['lastname'] = name.split(' ', 1)
@@ -160,16 +169,13 @@ def addVote(user, voterid=None):
                                     vote = { 'type': b['type'],
                                              'item': b['name'],
                                              'candidate': c['fullname'],
-                                             'answer': candidateid
+                                             'writein': c['new'],
+                                             'answer': candidateid,
                                            }
                                     if itemid not in answers:
                                         answers[itemid] = [vote]
                                     else:
                                         answers[itemid].append(vote)
-                            else:
-                                # We will not be adding this to the database.
-                                c['new'] = False
-
 
                     elif ITEM_TYPES.QUESTION.value == b['type']:
                         answer = request.values.get('question_%s' % itemid, None)
@@ -179,9 +185,16 @@ def addVote(user, voterid=None):
                             result = True if answer == 'Yes' else False
                             vote = { 'type': b['type'],
                                      'item': b['name'],
-                                     'answer': '1' if True == result else 0
+                                     'answer': '1' if True == result else '0'
                                    }
                             answers[itemid] = [vote]
+
+                # Empty ballots are not accepted.
+                if failed is False:
+                    if len(answers) == 0:
+                        current_user.logger.flashlog("Add vote failure", "Election Error:", large=True)
+                        current_user.logger.flashlog("Add vote failure", "The ballot is empty.", indent=True)
+                        failed = True
 
                 # If all the answers were retrieved successfully, add them to the database.
                 if failed is False:
@@ -189,7 +202,18 @@ def addVote(user, voterid=None):
                     # The ID used was temporary and the database will generate the new ID.
                     current_user.logger.info("Adding a vote: Saving votes")
 
-                    # candidates is keyed by itemid.
+                    # Make all write-in candidates that are not selected 'not-new' so we don't
+                    # try to add them to the database.
+                    for itemid in candidates:
+                        for candidate in candidates[itemid]:
+                            if candidate['writein'] is True:
+                                # If the candidate ID is not in the answers for this item,
+                                # set its 'new' flag to False;
+                                present = list(filter(lambda x: str(x['answer']) == candidate['id'], answers[itemid]))
+                                if len(present) == 0:
+                                    candidate['new'] = False
+
+                    # Candidates is keyed by itemid.
                     for itemid in candidates:
                         for candidate in candidates[itemid]:
                             if candidate['new'] is True:
@@ -246,21 +270,30 @@ def addVote(user, voterid=None):
                         current_user.logger.flashlog("Add vote failure", err)
                         return redirect(url_for('main_bp.index'))
 
-                    current_user.logger.flashlog(None, "Vote recorded for Voter ID '%s':" % voterid, 'info', propagate=True)
+                    current_user.logger.flashlog(None, "Vote Recorded for Voter ID %s:" % voterid, 'info', propagate=True, large=True)
+                    current_user.logger.flashlog(None, "Voter Name: %s" % voter['fullname'], 'info', propagate=True, indent=True)
+                    current_user.logger.info("(Vote choices are not logged)", propagate=True, indent=True)
+
+                    current_user.logger.flashlog(None, "Selections", 'info', propagate=True, large=True, log=False)
                     for itemid in answers:
+                        # These get displayed to the page but are not logged to keep the vote anonymous.
                         for answer in answers[itemid]:
                             if ITEM_TYPES.CONTEST.value == answer['type']:
-                                current_user.logger.flashlog(None, "Contest %d (%s): %s" % (itemid, answer['item'], answer['candidate']), 'info', propagate=True)
+                                current_user.logger.flashlog(None, "Contest %d (%s): %s%s" %
+                                                             (itemid, answer['item'], answer['candidate'], ' (write-in)' if answer['writein'] is True else ""),
+                                                             'info', propagate=True, log=False, indent=True)
 
                             elif ITEM_TYPES.QUESTION.value == answer['type']:
-                                current_user.logger.flashlog(None, "Question %d (%s): %s" % (itemid, answer['item'], ('Yes' if answer['answer'] is True else 'No')), 'info', propagate=True)
+                                current_user.logger.flashlog(None, "Question %d (%s): %s" %
+                                                            (itemid, answer['item'], ('Yes' if answer['answer'] == '1' else 'No')),
+                                                            'info', propagate=True, log=False, indent=True)
 
                     current_user.logger.info("Add vote: Operation completed")
                     return redirect(url_for('main_bp.index'))
 
         return render_template('votes/addvote.html', user=user, admins=ADMINS[current_user.event.clubid],
                                 voter=voter, voterid=voterid,
-                                ballotitems=ballotitems, candidates=candidates,
+                                ballotitems=ballotitems, candidates=candidates, answers=answers,
                                 configdata=current_user.get_render_data())
 
     except Exception as e:
@@ -271,22 +304,18 @@ def addVote(user, voterid=None):
         # Redirect to the main page to display the exception and prevent recursive loops.
         return redirect(url_for('main_bp.index'))
 
-def removeVote(user):
+def showResults(user):
     try:
         # Since these buttons are in the form area on this page, we have to handle in code.
         option = request.values.get('redirect')
         if option is not None:
             return redirect(url_for('main_bp.%s' % option))
 
-        if request.values.get('cancelbutton'):
-            current_user.logger.flashlog(None, "Remove vote operation canceled.", 'info')
-            return redirect(url_for('main_bp.removevote'))
-
-        current_user.logger.info("Displaying: Remove vote")
+        current_user.logger.info("Displaying: Show vote results")
 
 
     except Exception as e:
-        current_user.logger.flashlog("Remove vote failure", "Exception: %s" % str(e), propagate=True)
+        current_user.logger.flashlog("Show vote results failure", "Exception: %s" % str(e), propagate=True)
         current_user.logger.error("Unexpected exception:")
         current_user.logger.error(traceback.format_exc())
 

@@ -452,7 +452,8 @@ class AppLog():
     # Log a message and dump to the browser session as well.
     # The default is an error message as the usual case.
     # By default, these logs are not propagated upward; the caller must indicate to do so.
-    def flashlog(self, prefix, msg, level='error', highlight=True, indent=False, large=False, propagate=False):
+    # If specified, the messazge is dispalyed but not logged.
+    def flashlog(self, prefix, msg, level='error', highlight=True, indent=False, large=False, propagate=False, log=True):
         '''
             Log and output flash (message to session).
 
@@ -461,18 +462,22 @@ class AppLog():
             :param  msg: Message to log.
 
             :param  level: Level for flash (default; 'error').
+
+            :param log: If False, do not log the message.
         '''
         if prefix is not None:
             logmsg = "%s-> %s: %s" % ('-> ' if indent is True else '', prefix, msg)
         else:
             logmsg = "%s-> %s" %('-> ' if indent is True else '', msg)
 
-        if level == 'error':
-            self.error(logmsg, propagate=propagate)
-        elif level == 'warning':
-            self.warning(logmsg, propagate=propagate)
-        else:
-            self.info(logmsg, propagate=propagate)
+        # Only log if specified (default).
+        if log is True:
+            if level == 'error':
+                self.error(logmsg, propagate=propagate)
+            elif level == 'warning':
+                self.warning(logmsg, propagate=propagate)
+            else:
+                self.info(logmsg, propagate=propagate)
 
         if highlight is True:
             level += '-bold'

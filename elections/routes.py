@@ -1191,7 +1191,7 @@ def showvoters():
 
 
 # Add a vote for an event.
-@main_bp.route('/voter/addvote', methods=['GET', 'POST'])
+@main_bp.route('/votes/addvote', methods=['GET', 'POST'])
 @login_required
 def addvote():
     user = current_user.get_id()
@@ -1208,10 +1208,10 @@ def addvote():
     return votes.addVote(user)
 
 
-# Remove a vote from an event.
-@main_bp.route('/voter/removevote', methods=['GET', 'POST'])
+# Show event vote results.
+@main_bp.route('/votes/showresults', methods=['GET', 'POST'])
 @login_required
-def removevote():
+def showresults():
     user = current_user.get_id()
 
     # Generic catchall in case the current user has been invalidated.
@@ -1223,4 +1223,4 @@ def removevote():
     if user not in ADMINS[clubid]:
         return unauthorized()
 
-    return votes.removeVote(user)
+    return votes.showResults(user)

@@ -20,6 +20,16 @@
 
 <form action="" role="form" method="post">
 
+    <span class="vote-title">Election: {{configdata[1]}}</span>
+
+    {% include 'messages.html' %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages and messages|length >= 0 %}
+        <br>
+        {% endif %}
+        {% endwith %}
+
     <!-- If the event is locked, then nothing can be done. -->
     {% if configdata[12] == False %}
 
@@ -43,8 +53,10 @@
         <label class="voter" title="The Voter's name." for="votername">Voter Name</label>
         <span class="voter-voteid">{{voter['fullname']}}</span><br><br>
 
+        {% set focused = {'value': False} %}
+
         <!-- Show the ballots and allow the voter to select. -->
-         {% for b in ballotitems %}
+        {% for b in ballotitems %}
             <span class="vote-itemname">{% if b['type'] == 1 %}Contest:{% else %}Question:{% endif %} {{b['name']}}</span>
             <br><br>
             <span class="vote-item">Description:</span>
@@ -64,13 +76,16 @@
                     <tr><td>
                         {% if c['new'] == False %}
                         <!-- Existing candidate entries. -->
-                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
+                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" onclick="reconfirm(event);"
+                            {% if focused['value'] == False %} autofocus {% endif %}
+                            {% if focused['value'] == False %} {% if focused.update({'value': True}) %} {% endif %} {% endif %}
+                            {% if c['selected'] == True %}checked{% endif %}>
                         <label class="vote-candidate">{{c['fullname']}}</label>
                         {% else %}
                         <!-- new write-in candidate entries. -->
-                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" {% if c['selected'] == True %}checked{% endif %}>
+                        <input class="vote-candidate" type="checkbox" id="contest_{{b['itemid']}}_{{c['id']}}" name="contest_{{b['itemid']}}_{{c['id']}}" value="True" onclick="reconfirm(event);" {% if c['selected'] == True %}checked{% endif %}>
                         <label class="vote-candidate">
-                            <input class="vote-candidate" type="text" minlength='1' maxlength="64" id="writein_{{b['itemid']}}_{{c['id']}}" name="writein_{{b['itemid']}}_{{c['id']}}">
+                            <input class="vote-candidate" type="text" minlength='1' maxlength="64" id="writein_{{b['itemid']}}_{{c['id']}}" name="writein_{{b['itemid']}}_{{c['id']}}" onkeydown="reconfirm(event);">
                         </label>
                         {% endif %}
                     </td></tr>
@@ -78,14 +93,24 @@
                     </table>
                 </div>
             {% elif b['type'] == 2 %}
+                <!-- Get the answer for this question -->
+                {% if answers %}
+                    {% set answer = { 'value': answers[b['itemid']][0]['answer'] } %}
+                {% else %}
+                    {% set answer = { 'value': '' } %}
+                {% endif %}
                 <div class="vote-item">
                     <table class="vote-questions">
                         <tr><td>
-                            <input class="vote-question" type="radio" id="yes" name="question_{{b['itemid']}}" value="Yes">
+                            <input class="vote-question" type="radio" id="yes" name="question_{{b['itemid']}}" value="Yes" onclick="reconfirm(event);"
+                             {% if focused['value'] == False %} autofocus {% endif %}
+                                {% if focused['value'] == False %} {% if focused.update({'value': True}) %} {% endif %}{% endif %}
+                                {% if answer['value'] == '1' %}checked{%endif %}>
                             <label class="vote-question" for="yes">Yes</label><br>
                         </td></tr>
                         <tr><td>
-                            <input class="vote-question" type="radio" id="no" name="question_{{b['itemid']}}" value="No">
+                            <input class="vote-question" type="radio" id="no" name="question_{{b['itemid']}}" value="No" onclick="reconfirm(event);"
+                                {% if answer['value'] == '0' %}checked{%endif %}>
                             <label class="vote-question" for="no">No</label><br>
                         </td></tr>
                     </table>
@@ -108,8 +133,6 @@
 
     {% endif %} <!-- event locked -->
 </form>
-
-{% include 'messages.html' %}
 
 <br>
 

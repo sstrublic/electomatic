@@ -6,6 +6,7 @@
 
 /* Common form JS */
 
+
 /* Set the top position of the scrollable area */
 function setElementTopPosition() {
   var topelem = document.getElementById("top")
@@ -115,14 +116,17 @@ function enableSubmit(event) {
 
 
 /* Enable the confirm button and disable the submit button. */
-function enableConfirm(event) {
-  event.preventDefault();
+function reconfirm(event) {
   document.getElementById('confirm').disabled = false;
   document.getElementById('confirm').style = "";
   document.getElementById('savebutton').disabled = true;
   document.getElementById('savebutton').style = "pointer-events: none;";
 }
 
+function enableConfirm(event) {
+  event.preventDefault();
+  reconfirm(event);
+}
 
 /* Convert Enter to a simulated tab (shift-enter to shift-tab) by shifting focus to
    the next tab index.
@@ -223,9 +227,6 @@ window.onkeyup = function(event) {
       document.getElementById(elementname).value = "";
       document.getElementById("entrybutton").disabled = true;
     }
-
-    /* Push the cancel button. */
-    document.getElementById("cancelbutton").click();
 
   } else {
     /* All pages with an entry ID use this field. */
