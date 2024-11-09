@@ -1,0 +1,109 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user in admins or user in voters %}
+<div class="page-content">
+{% else %}
+<div class="page-content-public">
+{% endif %}
+
+<div>
+<h1>
+    <b>Event Results</b>
+</h1>
+</div>
+
+{% if user in admins or user in voters %}
+<div class="page-interior">
+{% else %}
+<div class="page-interior-public">
+{% endif %}
+
+<form action="" role="form" method="post">
+
+{% if ballotitems|length == 0 %}
+<p style="text-align:center; width:100%;"><span style="font-size:24px;">There are no Election Results to display.</span></p>
+{% else %}
+
+<!-- Controls. -->
+<div class="top-buttons">
+    <button type="button" id="printbutton" name="printbutton" value="print" onclick="printDiv('printableArea');">Print</button>
+</div>
+
+{% if user in admins %}
+<div class="button-top-page-content" id="printableArea">
+{% else %}
+<div class="button-top-page-content-public" id="printableArea">
+{% endif %}
+    <span class="results-title">Election: {{configdata[1]}}</span>
+
+    <!-- Display the entry data. -->
+    {% for b in ballotitems %}
+    <div class="results-table">
+
+        <span class="results-itemname">{% if ballotitems[b]['type'] == 1 %}Contest:{% else %}Question:{% endif %} {{ballotitems[b]['name']}}</span>
+        <br><br>
+        <span class="results-item">Description:</span>
+        <br>
+        <div class="ballotitem-textarea">
+            <textarea class="ballotitem-desc" maxlength="1024" cols="80" id="description_{{ballotitems[b]['itemid']}}" disabled onload="auto_grow(this);">{{ballotitems[b]['description']}}</textarea>
+            <script type="text/javascript">
+                auto_grow(document.getElementById("description_{{ballotitems[b]['itemid']}}"));
+            </script>
+        </div>
+
+        <div class="results-table">
+            <table class="results">
+                {% if ballotitems[b]['type'] == 1 %}
+                <thead>
+                    <th class="results-candidate">Candidate</th>
+                    <th class="results-votes">Votes</th>
+                </thead>
+
+                {% for v in ballotitems[b]['votes'] %}
+                <tr>
+                    <td class="results-candidate">{% if v['placed'] == True %}<b>{%endif %}{{v['fullname']}}</b></td>
+                    <td class="results-votes">{% if v['placed'] == True %}<b>{%endif %}{{v['count']}}</td>
+                </tr>
+                {% endfor %}
+
+                {% elif ballotitems[b]['type'] == 2 %}
+                <thead>
+                    <th class="results-answer">Answer</th>
+                    <th class="results-votes">Votes</th>
+                </thead>
+                    {% for v in ballotitems[b]['votes'] %}
+                    <tr>
+                        <td class="results-answer">{% if v['placed'] == True %}<b>{%endif %}{% if v['answer'] == 1 %}Yes{% else %}No{%endif %}</b></td>
+                        <td class="results-votes">{% if v['placed'] == True %}<b>{%endif %}{{v['count']}}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+        <br><br>
+    </div>
+    {% endfor %} <!-- ballot items -->
+
+{% endif %} <!-- If there are results to display -->
+
+<div align="center" style="padding:20px;">
+    <button type="submit" id="redirect" name="redirect" value="index" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Home</button>
+</div>
+
+</form>
+
+{% include 'messages.html' %}
+
+</div>
+
+</div>
+
+{% endblock %}

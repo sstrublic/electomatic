@@ -956,12 +956,12 @@ span.vote-item {
     margin-bottom: 8px;
 }
 
-table.vote-candidates td {
-    padding-left: 20px;
-}
-
 table.vote-candidates, table.vote-questions {
     border: 2px solid black;
+}
+
+table.vote-candidates td {
+    padding-left: 20px;
 }
 
 table.vote-questions td {
@@ -972,28 +972,96 @@ input.vote-candidate[type="text"] {
     width: 500px;
 }
 
+input.vote-candidate[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+    margin-top: 14px;
+}
+
 input.vote-candidate[type="checkbox"]:hover {
     outline: 3px solid yellow;
 }
 
 input.vote-question[type="radio"] {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    margin-bottom: 10px;
 }
 
 input.vote-question[type="radio"]:hover {
     outline: 3px solid yellow;
 }
 
-label.vote-candidate, label.vote-question {
+label.vote-candidate {
     font-size: 24px;
     padding-left: 20px;
     padding-right: 20px;
-    margin-top: 4px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+label.vote-question {
+    font-size: 24px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 8px;
 }
 
 .vote-item {
     padding-left: 40px;
+}
+
+span.results-title {
+    display: inline-block;
+    width: 100%;
+    font-weight: bold;
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+span.results-itemname {
+    font-weight: bold;
+    font-size: 28px;
+    padding-left: 20px;
+}
+
+span.results-item {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 20px;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+table.results {
+    border: 2px solid black;
+}
+
+table.results td, table.results th {
+    font-size: 20px;
+}
+
+.results-table {
+    padding-left: 20px;
+}
+
+.results-candidate {
+    min-width: 400px;
+    padding-left: 10px;
+}
+
+.results-votes {
+    min-width: 100px;
+    text-align: center;
+}
+
+.results-answer {
+    min-width: 120px;
+    text-align: center;
 }
 
 /* Note: Design for a width of 768px */
@@ -1433,7 +1501,7 @@ label.vote-candidate, label.vote-question {
         padding-left: 10px;
         font-size: 16px;
         display: inline-block;
-        width: 600px;
+        width: 99%;
         min-height: 80px;
         max-height: 400px;
     }
@@ -1496,6 +1564,157 @@ label.vote-candidate, label.vote-question {
         font-size: 18px;
     }
 
+    .vote-item {
+        width: 99%;
+        padding-left: 1px;
+    }
+
+    label.voter {
+        width: 140px;
+        padding-left: 20px;
+    }
+
+    span.vote-title {
+        display: inline-block;
+        width: 100%;
+        font-weight: bold;
+        font-size: 24px;
+        text-align: left;
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+
+    span.voter-voteid {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    span.vote-voteid {
+        font-weight: bold;
+        font-size: 24px;
+        padding-left: 20px;
+    }
+
+    span.vote-itemname {
+        font-weight: bold;
+        font-size: 22px;
+        padding-left: 20px;
+    }
+
+    span.vote-item {
+        display: inline-block;
+        font-weight: bold;
+        font-size: 18px;
+        padding-left: 20px;
+        margin-bottom: 8px;
+    }
+
+    table.vote-candidates {
+        border: 2px solid black;
+        width: 99%;
+    }
+
+    table.vote-questions {
+        border: 2px solid black;
+        width: 33%;
+    }
+
+    table.vote-candidates td {
+        padding-left: 1px;
+    }
+
+    table.vote-questions td {
+        padding-left: 1px;
+    }
+
+    input.vote-candidate[type="text"] {
+        width: 95%;
+    }
+
+    input.vote-candidate[type="checkbox"] {
+        width: 28px;
+        height: 28px;
+        margin-left: 20px;
+        margin-top: -6px;
+        vertical-align: middle;
+    }
+
+    input.vote-candidate[type="checkbox"]:hover {
+        outline: 3px solid yellow;
+    }
+
+    input.vote-question[type="radio"] {
+        width: 28px;
+        height: 28px;
+        margin-left: 20px;
+        margin-top: 2px;
+        vertical-align: middle;
+    }
+
+    input.vote-question[type="radio"]:hover {
+        outline: 3px solid yellow;
+    }
+
+    label.vote-candidate {
+        font-size: 20px;
+        padding-left: 20px;
+        margin-top:10px;
+        margin-bottom: 8px;
+    }
+
+    label.vote-question {
+        font-size: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-top: 10px;
+    }
+
+    span.results-title {
+        display: inline-block;
+        width: 100%;
+        font-weight: bold;
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 10px;
+        padding-left: 4px;
+    }
+
+    span.results-itemname {
+        font-weight: bold;
+        font-size: 20px;
+        padding-left: 4px;
+    }
+
+    span.results-item {
+        display: inline-block;
+        font-weight: bold;
+        font-size: 18px;
+        padding-left: 4px;
+        margin-bottom: 8px;
+    }
+
+    table.results {
+        border: 2px solid black;
+    }
+
+    .results-table {
+        padding-left: 1px;
+    }
+
+    .results-candidate {
+        width: 90%;
+        padding-left: 10px;
+    }
+
+    .results-votes {
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .results-answer {
+        min-width: 100px;
+        text-align: center;
+    }
 }
 
 /* Note: Design for a width > 788px */
@@ -1728,7 +1947,7 @@ label.vote-candidate, label.vote-question {
         display:none;
     }
 
-    .ballotitems th, .ballotitems-candidates th, .candidates th {
+    .ballotitems th, .ballotitems-candidates th, .candidates th, table.results th {
         background-color: #238360 !important;
         color: white !important;
     }

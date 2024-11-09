@@ -313,6 +313,70 @@ def showResults(user):
 
         current_user.logger.info("Displaying: Show vote results")
 
+        current_user.logger.debug("Show vote results: Fetching ballots and votes")
+        # Fetch all ballot items and votes.
+        outsql = ['''SELECT *
+                        FROM ballotitems
+                        WHERE clubid='%d' AND eventid='%d'
+                        ORDER BY itemid ASC;
+                    ''' % (current_user.event.clubid, current_user.event.eventid)]
+        outsql.append('''SELECT votes.itemid, votes.answer, candidates.fullname, COUNT(*)
+                         FROM votes
+                         LEFT JOIN candidates ON candidates.eventid=votes.eventid AND candidates.itemid=votes.itemid AND candidates.id=votes.answer
+                         WHERE votes.clubid='%d' AND votes.eventid='%d'
+                         GROUP BY votes.itemid, votes.answer, candidates.fullname
+                         ORDER BY itemid ASC, count DESC;
+                      ''' % (current_user.event.clubid, current_user.event.eventid))
+        _, data, _ = db.sql(outsql, handlekey=user)
+
+        ballotdata = data[0]
+        votedata = data[1]
+
+        current_user.logger.debug("Show vote results: Counting votes")
+
+        ballotitems = {}
+        for b in ballotdata:
+            itemid = b['itemid']
+            ballotitems[itemid] = b
+
+        votes = {}
+        placed = {}
+
+        for v in votedata:
+            itemid = v['itemid']
+            ballottype = ballotitems[v['itemid']]['type']
+            positions = ballotitems[v['itemid']]['positions']
+
+            if itemid not in placed.keys():
+                placed[itemid] = 0
+            else:
+                placed[itemid] += 1
+
+            if ITEM_TYPES.CONTEST.value == ballottype:
+                if placed[itemid] < positions:
+                    v['placed'] = True
+                else:
+                    v['placed'] = False
+            elif ITEM_TYPES.QUESTION.value == ballottype:
+                if 0 == placed[itemid]:
+                    v['placed'] = True
+                else:
+                    v['placed'] = False
+
+            if itemid not in votes:
+                votes[itemid] = [v]
+            else:
+                votes[itemid].append(v)
+
+        # Add the votes to the ballot item.
+        for b in ballotitems:
+            ballotitems[b]['votes'] = votes[b]
+
+        current_user.logger.info("Show vote results: Operation completed")
+
+        return render_template('votes/showresults.html', user=user, admins=ADMINS[current_user.event.clubid],
+                                ballotitems=ballotitems,
+                                configdata=current_user.get_render_data())
 
     except Exception as e:
         current_user.logger.flashlog("Show vote results failure", "Exception: %s" % str(e), propagate=True)
