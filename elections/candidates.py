@@ -328,7 +328,7 @@ def editCandidate(user):
             count = data[0][0]
 
             if count['votecount'] > 0:
-                current_user.logger.flashlog("Edit candidate failure", "Ballot item '%s' has Votes and candidates cannot be changed." % contest)
+                current_user.logger.flashlog("Edit candidate failure", "Ballot item '%s' has Votes and Candidates cannot be changed." % contest)
                 return redirect(url_for('main_bp.editcandidate'))
 
             saving = False
@@ -562,7 +562,7 @@ def removeCandidate(user):
             count = data[0][0]
 
             if count['votecount'] > 0:
-                current_user.logger.flashlog("Remove candidate failure", "Ballot item '%s' has Votes and cannot be removed." % contest)
+                current_user.logger.flashlog("Remove candidate failure", "Ballot item '%s' has Votes and Candidates cannot be removed." % contest)
                 return redirect(url_for('main_bp.removecandidate'))
 
             saving = False

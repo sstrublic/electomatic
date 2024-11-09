@@ -409,8 +409,8 @@ def editItem(user):
         count = data[2][0]
 
         if count['votecount'] > 0:
-            current_user.logger.flashlog("Edit ballot item failure", "Item with ID %d has Votes and cannot be changed." % itemid)
-            return redirect(url_for('main_bp.showitems'))
+            current_user.logger.flashlog("Edit ballot item failure", "Ballot Item '%s' has Votes and cannot be changed." % itemdata['name'])
+            return redirect(url_for('main_bp.showitem') + "?itemid=%d" % itemid)
 
         itemdata['typestr'] = ITEM_TYPES_DICT[itemdata['type']]
 
@@ -630,7 +630,7 @@ def removeItem(user):
         count = data[1][0]
 
         if count['votecount'] > 0:
-            current_user.logger.flashlog("Remove ballot item failure", "Item with ID %d has Votes and cannot be removed." % itemid)
+            current_user.logger.flashlog("Remove ballot item failure", "Ballot Item '%s' has Votes and cannot be removed." % itemdata['name'])
             return redirect(url_for('main_bp.showitem') + "?itemid=%d" % itemid)
 
         itemdata['typestr'] = ITEM_TYPES_DICT[itemdata['type']]
