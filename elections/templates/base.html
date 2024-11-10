@@ -49,6 +49,7 @@ event locked = configdata[12]
 
 <body>
 
+  {% if external is not defined or external == False %}
   <nav class="navbar navbar-fixed-top w3-white w3-border">
     <div class="navbar-header">
 
@@ -354,12 +355,20 @@ event locked = configdata[12]
     </div>
   </nav>
 
+  {% endif %} <!-- external -->
+
   {% if user != None %}
 
   {% if user in admins %}
   <div class="top-pad">
   {% else %}
+
+  {% if external is defined and external == True %}
+  <div class="top-pad-vote">
+  {% else %}
   <div class="top-pad-public">
+  {% endif %}
+
   {% endif %}
 
   {% else %}

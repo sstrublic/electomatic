@@ -85,6 +85,10 @@ footer {
     margin-top: 50px;
 }
 
+.top-pad-vote {
+    margin-top: 10px;
+}
+
 /* Padding for buttons at the top of a page */
 .top-buttons {
     padding-left: 10px;
@@ -140,6 +144,16 @@ html, body {
     overflow: auto;
 }
 
+.page-content-vote {
+    position: fixed;
+    top: 32px;
+    bottom: 16px;
+    width: 100%;
+    padding-top: 2px;
+    border-top: 1px solid gray;
+    overflow: auto;
+}
+
 .main-page-button-public {
     font-size: 20px;
     padding-top: 16px;
@@ -177,6 +191,17 @@ html, body {
     }
 
     /* Defines the viewable content area for pages with buttons on top. */
+    .button-top-page-content-voted {
+        position: fixed;
+        top: 130px;
+        bottom: 16px;
+        overflow: auto;
+        padding-top: 8px;
+        width: 100%;
+        border-top: 1px solid gray;
+    }
+
+    /* Defines the viewable content area for pages with buttons on top. */
     .button-top-page-content-public {
         position: fixed;
         top: 186px;
@@ -200,6 +225,16 @@ html, body {
     @media screen and (min-width: 768px) {
 
         /* Defines the content area of the page. */
+
+        .generic-public-voted {
+            position: fixed;
+            top: 72px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+        }
+
         .page-content {
             position: fixed;
             top: 72px;
@@ -263,6 +298,15 @@ html, body {
     }
 
     @media screen and (max-width: 767px) {
+        .generic-public-voted {
+            position: fixed;
+            top: 60px;
+            bottom: 16px;
+            overflow: auto;
+            width: 100%;
+            padding-top: 8px;
+        }
+
         /* Float two columns side by side */
         .main-page-column {
             padding: 2px;
@@ -296,6 +340,17 @@ html, body {
             width: 100%;
             border-top: 1px solid gray;
         }
+
+        /* Defines the viewable content area for pages with buttons on top. */
+        .button-top-page-content-voted {
+            position: fixed;
+            top: 116px;
+            bottom: 16px;
+            overflow: auto;
+            padding-top: 8px;
+            width: 100%;
+            border-top: 1px solid gray;
+        }
     }
 }
 
@@ -308,6 +363,25 @@ html, body {
         overflow: auto;
         width: 100%;
         padding-top: 8px;
+    }
+
+    .generic-public-voted {
+        position: fixed;
+        top: 72px;
+        bottom: 16px;
+        overflow: auto;
+        width: 100%;
+        padding-top: 8px;
+    }
+
+
+    /* Defines the viewable content area for pages with buttons on top. */
+    .button-top-page-content-voted {
+        position: relative;
+        overflow: auto;
+        padding-top: 8px;
+        width: 100%;
+        border-top: none;
     }
 
     @media screen and (min-width: 768px) {
@@ -954,6 +1028,13 @@ span.vote-item {
     font-size: 20px;
     padding-left: 20px;
     margin-bottom: 8px;
+}
+
+span.vote-error {
+    color: darkred;
+    font-size: 20px;
+    padding-left: 20px;
+    font-weight: bold;
 }
 
 table.vote-candidates, table.vote-questions {

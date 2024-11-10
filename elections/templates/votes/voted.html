@@ -1,0 +1,105 @@
+<!-- Copyright 2021-2022 Steve Strublic
+
+     This work is the personal property of Steve Strublic, and as such may not be
+     used, distributed, or modified without my express consent.
+-->
+
+<!-- This specific form does not extend the base / common stuff because we don't want the menuing. -->
+<!doctype html>
+<html lang="en">
+    <title>The Elect-O-Matic!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- The page might load with no data because the voter Id was not fond. -->
+    {% if configdata != None %}
+
+    {% if configdata[4] != '0' and configdata[5] != '0' %}
+      <link rel="shortcut icon" href="{{ url_for('main_bp.images', clubid='' + configdata[4], eventid='' + configdata[5], filename='' + configdata[2]) }}">
+    {% else %}
+      <link rel="shortcut icon" href="{{ url_for('static', filename='' + configdata[2]) }}">
+    {% endif %}
+
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+    <!-- Got a nice icon from these people. This is the attribution. -->
+    <!-- https://www.flaticon.com/free-icons/prize Prize icons created by Freepik - Flaticon -->
+
+<body>
+
+<!-- Controls. -->
+{% if configdata != None %}
+  <div>
+    <h1>
+{% if success == True %}
+      <b>Vote Received</b>
+{% else %}
+  <b>Vote Not Accepted</b>
+{% endif %}
+    </h1>
+  </div>
+
+{% if success == True %}
+  <div class="generic-public-voted">
+    <div class="top-buttons">
+    <button type="button" id="printbutton" name="printbutton" value="print" onclick="printDiv('printableArea');">Print</button>
+  </div>
+{% endif %}
+
+{% if success == True %}
+  <div class="button-top-page-content-voted" id="printableArea">
+{% else %}
+  <div>
+{% endif %}
+    <span class="results-title">Election: {{configdata[1]}}</span>
+
+    <!-- When there are no messages, it's because it was a refresh.
+         the user tried to re-enter their vote. -->
+    {% if get_flashed_messages(with_categories=true)|length == 0 %}
+    <br>
+    <span class="vote-error">Your vote has already been recorded.</span>
+
+    {% else %}
+
+    {% if success == True %}
+    <input type="hidden" id="voterid" name="voterid" value="{{voterid}}">
+
+    <label class="voter" title="The unique Voter ID." for="voterid">Voter ID</label>
+    <span class="voter-voteid">{{voterid}}</span><br>
+
+    <label class="voter" title="The Voter's name." for="votername">Voter Name</label>
+    <span class="voter-voteid">{{fullname}}</span><br><br>
+    {% endif %}
+
+    <!-- All results driven by success or failure will have messages. -->
+    {% include 'messages.html' %}
+
+    {% endif %}
+
+  </div>
+
+{% else %}
+
+<span class="vote-item vote-error">Voter ID {{voterid}} was not found.</span>
+
+{% endif %}
+
+<!-- Intentional duplication of footer from base.html -->
+<footer>
+    <b><span class="appname">Elect-O-Matic</span></b>
+    <b><span class="w3-tiny attribution"><a href="https://www.flaticon.com/icons" target="_blank" title="Icons by Freepik - Flaticon">Thanks, Flaticon!</a></span></b>
+    <b><span class="w3-tiny copyright">v{{configdata[0]}} &#9400; Steve Strublic</span></b>
+</footer>
+
+</body>
+
+</html>

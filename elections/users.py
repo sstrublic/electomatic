@@ -26,8 +26,6 @@ from elections import EVENTCONFIG, USERTYPES, USERS, ADMINS, ALLUSERS
 from elections.events import EventConfig
 from elections.log import AppLog
 
-import elections.qrcodes as qrcodes
-
 # Users are per-club.
 class User(UserMixin):
     def __init__(self, username, usertype="Public", fullname="", clubid=0, eventid=0,
@@ -1453,26 +1451,6 @@ def showUser(user, username=None):
                     title = event[0]['title']
             else:
                 title = ''
-
-            # If the user is a public user with a public key, generate the QR code.
-            if usertype == 'Public':
-                publickey = userdata['publickey']
-
-                if publickey is not None:
-                    # Store the QR code in the club's images folder.
-                    basepath = os.path.join(os.getcwd(), app.config.get('IMAGES_UPLOAD_FOLDER'), str(current_user.event.clubid))
-
-                    # Store the QR code in the club's images folder.
-                    qrfile = '%d_%s_qrcode.png' % (eventid, username)
-
-                    # Path for download from server.
-                    qrimg = url_for('main_bp.clubimages', clubid=str(current_user.event.clubid), filename=qrfile)
-
-                    # Generate the QR code if it doesn't already exist.
-                    qrcodes.generate_public_qr_code( publickey, basepath, qrfile)
-
-                else:
-                    current_user.logger.debug("Viewing a user: No publickey for user '%s'" % username)
 
         return render_template('users/showuser.html', user=user, clubid=current_user.clubid, admins=ADMINS[current_user.clubid],
                                 usertypes=USERTYPES, username=username, fullname=fullname, usertype=usertype, active=active, clubadmin=clubadmin,

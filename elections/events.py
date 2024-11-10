@@ -25,8 +25,6 @@ events_mutex = threading.Lock()
 # Class to manage event config information.
 class EventConfig:
     def __init__(self, fetchconfig=True, version=None, user=None, clubid=0, eventid=0, eventdatetime='',
-                       public_choicevote=False, public_popvote=False, public_classvote=False, single_popvote=False,
-                       enable_popvote=True, enable_choicevote=True, enable_classvote=True,
                        locked=False):
         self.locked = locked
 
@@ -401,7 +399,9 @@ class EventConfig:
                 str(self.eventid),
                 False,
                 '',
-                False,
+                app.config.get("MULTI_TENANCY"),
+                session.get('event_login', False),
+                session.get('public_login', False),
                 False,
                 self.locked,
                 ]

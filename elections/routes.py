@@ -277,7 +277,7 @@ def after(response):
     # Save the current URL as the last URL visited.  We can do this since we always loop
     # through here to authenticate every page.  But not for certain pages that would create an
     # infinite loop of being unable to access anything.
-    if all(x not in request.full_path for x in ['login', 'logout', 'unauthorized', 'clubs', 'images']):
+    if all(x not in request.full_path for x in ['login', 'logout', 'unauthorized', 'clubs', 'images', 'vote']):
         session['prev_url'] = request.full_path
 
     return response
@@ -290,9 +290,9 @@ def login():
 
 
 # Public user login page.
-@main_bp.route('/publiclogin', methods=['GET', 'POST'])
-def publiclogin():
-    return logins.publicLogin()
+@main_bp.route('/vote', methods=['GET', 'POST'])
+def vote():
+    return votes.publicVote()
 
 
 # Clubs login page.

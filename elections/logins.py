@@ -8,16 +8,16 @@
 import traceback
 
 from elections import db
-from elections import app, getRemoteAddr
+from elections import app
 from elections import loggers, login_manager
-from elections import ALLUSERS, ALLSOURCES
+from elections import ALLUSERS
 from elections import EVENTCONFIG
 
 from flask import redirect, render_template, url_for, request, session, make_response
 from flask_login import login_user, logout_user, current_user
 from elections.log import AppLog
 from elections.users import User
-from elections.events import EventConfig
+import elections.votes as votes
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -55,106 +55,6 @@ def load_user(user_id):
     clear_session_variables()
 
     return None
-
-
-def publicLogin():
-    logger = loggers[AppLog.get_id()]
-
-    logger.info("Public login request started")
-
-    # The public key will be part of the login.
-    publickey = request.values.get('publickey', None)
-    if publickey is None:
-        logger.critical("Public login: Public key not specified")
-        return redirect(url_for('main_bp.unauthorized'))
-
-    else:
-        logger.info("Public login: Public key specified as '%s'" % publickey, indent=1)
-
-        # Find the user by their public key.
-        userdata = User.find_user_by_public_key(publickey)
-        if userdata is not None:
-            # We found them -
-            username = userdata['username']
-            clubid = userdata['clubid']
-            eventid = userdata['eventid']
-            active = userdata['active']
-
-            # If the user is not active, deny login.
-            if active is False:
-                logger.critical("Public login: Public user '%s' is not active" % username)
-                return redirect(url_for('main_bp.unauthorized'))
-
-            user = User(username, fullname=userdata['fullname'], usertype=userdata['usertype'], clubid=clubid, eventid=eventid,
-                        active=userdata['active'], siteadmin=False, clubadmin=False, publickey=publickey)
-            if user is None:
-                logger.critical("Public login: Failed to create user object for user '%s'!" % username)
-                return redirect(url_for('main_bp.unauthorized'))
-
-            # If they are active, then they're authorized as public users.
-
-            # Fetch any previous session uuid.
-            session_uuid = session.get('uuid', None)
-
-            # Log in the user, with a default expiration time before logout.
-            login_user(user)
-
-            user.set_login_status(True)
-            user.authenticated = True
-
-            # Overwrite the club ID.  This is harmless for single-tenant,
-            # but ensures the multi-tenant club ID is always right.
-            user.set_club(clubid)
-
-            # Sent the event configuration for this event.
-            user.set_event(eventid)
-
-            # Now we've got a user log instance... use it!
-            user.logger.info("Logged in public user '%s'" % username)
-
-            # Update the event club ID to what was entered.
-            # This is okay because we always have an event (even if it is a copy of the default/global event).
-            user.event.clubid = clubid
-
-            # Add the user session data to the caches.
-            if session_uuid is None:
-                session_uuid = User.add_to_object_cache(user)
-
-            if session_uuid is not None:
-                # Cache the club ID in the session for future reference.
-                # We can't always rely on the current_user object at the login/logout stage.
-                session['clubid'] = clubid
-
-                # Cache the siteadmin flag state as False (public users are never siteadmins).
-                session['siteadmin'] = False
-
-                # If not already so, the user will eventually pick an event, which will set the event information.
-                session['eventid'] = eventid
-
-                # This is a direct login to an event.
-                session['event_login'] = True
-
-                # This was a login from the public login interface (QR code based).
-                session['public_login'] = True
-
-                # Cache the session's UUID.
-                session['uuid'] = session_uuid
-
-                # Public users always log into the main page.
-                session['prev_url'] = None
-
-                return redirect(url_for('main_bp.index'))
-
-            else:
-                loggers[AppLog.get_id(clubid, eventid)].flashlog("Login Failed", "Login failed.", propagate=True)
-                user.set_event(0)
-
-        else:
-            eventid = int(request.values.get('eventid', '0'))
-            classid = int(request.values.get('classid', '0'))
-
-        # No good.
-        return redirect(url_for('main_bp.unauthorized'))
 
 
 # Log in a user.
