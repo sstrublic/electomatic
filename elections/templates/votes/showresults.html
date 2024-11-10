@@ -8,7 +8,7 @@
 
 {% block content %}
 
-{% if user in admins or user in voters %}
+{% if user in admins %}
 <div class="page-content">
 {% else %}
 <div class="page-content-public">
@@ -20,7 +20,7 @@
 </h1>
 </div>
 
-{% if user in admins or user in voters %}
+{% if user in admins %}
 <div class="page-interior">
 {% else %}
 <div class="page-interior-public">
