@@ -11,7 +11,6 @@ import datetime
 import collections
 import json
 import re
-import zipfile
 import shutil
 
 from elections import app, db
@@ -20,6 +19,7 @@ from elections import ADMINS
 # Fetch event config.
 import elections.events as events
 from elections.events import EventConfig
+from elections.ballotitems import ITEM_TYPES
 
 from flask import redirect, render_template, url_for, request, session
 from flask_login import current_user
@@ -44,11 +44,16 @@ EXPORT_VERSION = 1
 # All sheets to import/export.  This and SHEET_KEYS must be kept in sync to ensure data are processed correctly.
 # This will have one entry per version.  Index 0 is empty.
 ALL_SHEETS = [ [],
-               ['events', 'vote_ballotid']
+               ['events', 'ballotitems', 'candidates', 'voters', 'votes', 'vote_ballotid']
              ]
 
 # Keys per sheet that we expect if the sheet is present.
-SHEET_KEYS = {"events":               ['property', 'value']
+SHEET_KEYS = {"events":               ['property', 'value'],
+              "ballotitems":          ['itemid', 'type', 'name', 'description', 'positions', 'writeins'],
+              "candidates":           ['id', 'itemid', 'firstname', 'lastname', 'fullname', 'writein'],
+              "voters":               ['firstname', 'lastname', 'fullname', 'voteid', 'voted'],
+              "votes":                ['itemid', 'ballotid', 'answer', 'commentary'],
+              "vote_ballotid":        ['ballotid'],
              }
 
 # Custom import parsing exceptions.
@@ -67,7 +72,7 @@ def downloadTemplate(user):
 
         current_user.logger.info("Fetching event template file: Operation completed")
 
-        return render_template('config/templatefile.html', user=user, sourceadmins=ADMINS[event.clubid],
+        return render_template('config/templatefile.html', user=user, admins=ADMINS[event.clubid],
                             filepath=filepath, filename=filename,
                             configdata=current_user.get_render_data())
 
@@ -110,7 +115,7 @@ def exportData(user):
 
         current_user.logger.info("Exporting data: Operation completed")
 
-        return render_template('config/exportdata.html', user=user, sourceadmins=ADMINS[event.clubid],
+        return render_template('config/exportdata.html', user=user, admins=ADMINS[event.clubid],
                             filepath=filepath, filename=filename, imagefilepath=imagefilepath, imagefilename=imagefilename,
                             configdata=current_user.get_render_data())
 
@@ -179,7 +184,7 @@ def createEventWorksheet(wb, table, event):
 
 
 # Build the export file.
-def buildExportFile(user, fetchresults):
+def buildExportFile(user, fetchresults=False):
     try:
         event = current_user.event
 
@@ -199,11 +204,37 @@ def buildExportFile(user, fetchresults):
                          WHERE clubid='%d' AND eventid='%d';
                       ''' % (event.clubid, event.eventid))
 
+        # Fetch ballot item data.
+        outsql.append('''SELECT *
+                         FROM ballotitems
+                         WHERE clubid='%d' AND eventid='%d'
+                         ORDER BY itemid ASC;
+                      ''' % (event.clubid, event.eventid))
+
+        # Fetch candidate data.
+        outsql.append('''SELECT *
+                         FROM candidates
+                         WHERE clubid='%d' AND eventid='%d'
+                         ORDER BY id ASC;
+                      ''' % (event.clubid, event.eventid))
+
+        # Fetch voter data.
+        outsql.append('''SELECT *
+                         FROM voters
+                         WHERE clubid='%d' AND eventid='%d'
+                         ORDER BY id ASC;
+                      ''' % (event.clubid, event.eventid))
+
+        # Fetch votes data.
+        # This data does not need to be re-imported.
+        outsql.append('''SELECT *
+                         FROM votes
+                         WHERE clubid='%d' AND eventid='%d'
+                         ORDER BY id ASC;
+                      ''' % (event.clubid, event.eventid))
+
         if fetchresults is True:
             current_user.logger.debug("Exporting event data: Including results", indent=1)
-
-        # We may rebuild the class_entryid, deleted_entries and vote_ballotid tables from the data set on import.
-        # We do not back up users since we don't have passwords.
 
         # Fetch the data.
         _, data, _ = db.sql(outsql, handlekey=current_user.get_userid())
@@ -243,7 +274,7 @@ def buildExportFile(user, fetchresults):
             current_user.logger.info("Exporting event data: Created export data directory '%s'" % filepath, indent=1, propagate=True)
             os.makedirs(filepath)
 
-        filename = 'event_%d_%d_export.xlsx' % (event.clubid, event.eventid)
+        filename = 'election_%d_%d_export.xlsx' % (event.clubid, event.eventid)
         file = os.path.join(filepath, filename)
 
         current_user.logger.debug("Exporting event data: Saving data to file '%s'" % filename, indent=1)
@@ -338,7 +369,7 @@ def resetData(user):
 
                 current_user.logger.info("Clear event data: Clear operation completed")
 
-        return render_template('config/resetdata.html', user=user, sourceadmins=ADMINS[event.clubid],
+        return render_template('config/resetdata.html', user=user, admins=ADMINS[event.clubid],
                             reset_request=reset_request, confirm_request=confirm_request,
                             configdata=current_user.get_render_data())
 
@@ -433,7 +464,7 @@ def restartEvent(user):
 
                 current_user.logger.info("Restart event: Clear operation completed")
 
-        return render_template('config/restartevent.html', user=user, sourceadmins=ADMINS[event.clubid],
+        return render_template('config/restartevent.html', user=user, admins=ADMINS[event.clubid],
                             reset_request=reset_request, confirm_request=confirm_request,
                             configdata=current_user.get_render_data())
 
@@ -552,7 +583,7 @@ def importData(user):
                     current_user.logger.debug("System data import: Removing import file '%s'" % filename, indent=1)
                     os.remove(filepath)
 
-                return render_template('config/importdata.html', user=user, sourceadmins=ADMINS[event.clubid],
+                return render_template('config/importdata.html', user=user, admins=ADMINS[event.clubid],
                                     load_request=load_request, confirm_request=confirm_request, filename=None,
                                     configdata=current_user.get_render_data())
 
@@ -668,7 +699,7 @@ def importData(user):
                 current_user.logger.info("Import event data: Import operation completed")
                 return redirect(url_for('main_bp.index'))
 
-        return render_template('config/importdata.html', user=user, sourceadmins=ADMINS[event.clubid],
+        return render_template('config/importdata.html', user=user, admins=ADMINS[event.clubid],
                             load_request=load_request, confirm_request=confirm_request, filename=filename, eventname=eventname,
                             configdata=current_user.get_render_data())
 
@@ -904,7 +935,7 @@ def validateImportData(filepath, validating=False):
 
     # If the imported data has certain worksheets with content, then the data is a backup/restore and not a bulk import of new entries and classes.
     restoring_backup = False
-    if any(sheet in list(data) for sheet in ['vote_ballotid']):
+    if any(sheet in list(data) for sheet in ['vote_ballotid', 'votes']):
         current_user.logger.info("Restoring a backup for event %d" % event.eventid, indent=1, propagate=True)
         restoring_backup = True
 
@@ -924,7 +955,11 @@ def validateImportData(filepath, validating=False):
     # It returns the same parameters: errors, warnings, returndata (data read from and needed by other things).
     # Order is important as other validators may need things fetched by prior validators.
     validation_table = [
-                        validateEventConfig
+                        validateEventConfig,
+                        validateBallotItems,
+                        validateCandidates,
+                        validateVoters,
+                        validateVotes
                        ]
 
     # Iterate through the table, calling each validator.
@@ -1160,6 +1195,357 @@ def validateBallotID(data, appdata):
     return errors, warnings, returndata
 
 
+def validateBallotItems(data, appdata):
+    current_user.logger.debug("Validating ballot item data", indent=1)
+
+    errors = []
+    warnings = []
+    returndata = {}
+
+    table = 'ballotitems'
+
+    # This table is required.
+    if table not in data:
+        errors.append("Missing required table '%s'" % table)
+        return errors, warnings, returndata
+
+    ballotitems = data[table]
+
+    # We start at '2' because row 1 is the header row, previously verified.
+    # The data is in order in the ordered dict, so it represents row value.
+    for index, e in enumerate(ballotitems, start=2):
+        # Verify all fields have appropriate values.
+        keys = get_sheet_keys(table, appdata['version'])
+        for key in keys:
+            # Any required key must have a value.
+            value = e.get(key, None)
+
+            if value is None:
+                errors.append("Ballot Items: Row %d: Missing value for column '%s'" % (index, key))
+                continue
+
+            # Check type and range where appropriate.
+            if value is not None:
+                if key in ['itemid', 'type', 'positions']:
+                    try:
+                        value = int(value)
+
+                        # Class end entry IDs must be positive values.
+                        if key in ['itemid', 'positions']:
+                            if value < 0:
+                                errors.append("Ballot Items: Row %d: Value for column '%s' is invalid (%d)" % (index, key, value))
+
+                        elif key in ['type']:
+                            typecount = 2
+                            if not value_in_range(value, 1, 2):
+                                errors.append("Ballot Items: Row %d: Value for column '%s' is invalid (%d) (range: 1 - %d)" % (index, key, value, typecount))
+
+                    except:
+                        errors.append("Ballot Items: Row %d: Value for column '%s' must be an integer" % (index, key))
+
+                elif value in ['writeins']:
+                    if not valid_true_false_value(value):
+                        errors.append("Ballot Items: Row %d: Value for column '%s' must be %s" % (index, key, VALID_TRUE_FALSE_VALUES))
+
+    # Validate the data itself.
+    if len(errors) == 0:
+        itemlist = []
+        namelist = []
+        desclist = []
+
+        for b in ballotitems:
+            itemlist.append(b['itemid'])
+            namelist.append(b['name'])
+            desclist.append(b['description'])
+
+        # Check that item IDs, names and descriptions are not duplicated.
+        for index, itemid in enumerate(itemlist, start=2):
+            if itemlist.count(itemid) > 1:
+                errors.append("Ballot Items: Row %d: Item ID %d is duplicated" % (index, itemid))
+
+        for index, name in enumerate(namelist, start=2):
+            if namelist.count(name) > 1:
+                errors.append("Ballot Items: Row %d: Name '%s' is duplicated" % (index, name))
+
+        for index, name in enumerate(desclist, start=2):
+            if desclist.count(name) > 1:
+                errors.append("Ballot Items: Row %d: Description is duplicated" % index)
+
+    # If all checks out, save the ballot items as a dict for future validation.
+    if len(errors) == 0:
+        items = {}
+        for b in ballotitems:
+            item = {'itemid': b['itemid'],
+                    'type': b['type'],
+                    'name': b['name'],
+                    'description': b['description'],
+                    'positions': b['positions'],
+                    'writeins': b['writeins']
+                   }
+            items[b['itemid']] = item
+
+        returndata['ballotitems'] = items
+
+    return errors, warnings, returndata
+
+
+def validateCandidates(data, appdata):
+    current_user.logger.debug("Validating candidate data", indent=1)
+
+    errors = []
+    warnings = []
+    returndata = {}
+
+    table = 'candidates'
+
+    # This table is required.
+    if table not in data:
+        errors.append("Missing required table '%s'" % table)
+        return errors, warnings, returndata
+
+    candidates = data[table]
+
+    # We start at '2' because row 1 is the header row, previously verified.
+    # The data is in order in the ordered dict, so it represents row value.
+    for index, e in enumerate(candidates, start=2):
+        # Verify all fields have appropriate values.
+        keys = get_sheet_keys(table, appdata['version'])
+        for key in keys:
+            # Any required key must have a value.
+            value = e.get(key, None)
+
+            if value is None:
+                errors.append("Candidates: Row %d: Missing value for column '%s'" % (index, key))
+                continue
+
+            # Check type and range where appropriate.
+            if value is not None:
+                if key in ['itemid']:
+                    try:
+                        value = int(value)
+
+                        # Class end entry IDs must be positive values.
+                        if key in ['itemid']:
+                            if value < 0:
+                                errors.append("Candidates: Row %d: Value for column '%s' is invalid (%d)" % (index, key, value))
+
+                    except:
+                        errors.append("Candidates: Row %d: Value for column '%s' must be an integer" % (index, key))
+
+                elif value in ['writein']:
+                    if not valid_true_false_value(value):
+                        errors.append("Candidates: Row %d: Value for column '%s' must be %s" % (index, key, VALID_TRUE_FALSE_VALUES))
+
+    # Validate the data itself.
+    if len(errors) == 0:
+        idlist = []
+        namelist = []
+
+        ballotitems = appdata['ballotitems']
+        for c in candidates:
+            if c['itemid'] not in ballotitems.keys():
+                errors.append("Candidates: Row %d: Ballot item id '%d' was not found" % (index, c['itemid']))
+
+        # Verify the first and last names match the full name.
+        for c in candidates:
+            fullname = c['fullname']
+
+            first, last = fullname.split(' ', 1)
+            if first != c['firstname']:
+                errors.append("Candidates: Row %d: First name '%s' does not match full name" % (index, c['firstname']))
+
+            if last != c['lastname']:
+                errors.append("Candidates: Row %d: Last name '%s' does not match full name" % (index, c['lastname']))
+
+        for c in candidates:
+            idlist.append(c['id'])
+            namelist.append(c['fullname'])
+
+        for index, name in enumerate(namelist, start=2):
+            if idlist.count(name) > 1:
+                errors.append("Candidates: Row %d: ID '%d' is duplicated" % (index, id))
+
+        for index, name in enumerate(namelist, start=2):
+            if namelist.count(name) > 1:
+                errors.append("Candidates: Row %d: Name '%s' is duplicated" % (index, name))
+
+    # If all checks out, save the ballot items as a dict for future validation.
+    if len(errors) == 0:
+        for c in candidates:
+            itemid = c['itemid']
+            candidateid = c['id']
+
+            item = {'firstname': c['firstname'],
+                    'lastname': c['lastname'],
+                    'fullname': c['fullname'],
+                    'writein': c['writein']
+                   }
+
+            if 'candidates' not in ballotitems[itemid]:
+                ballotitems[itemid]['candidates'] = {}
+
+            ballotitems[itemid]['candidates'][candidateid] = item
+
+    return errors, warnings, returndata
+
+
+def validateVoters(data, appdata):
+    current_user.logger.debug("Validating voter data", indent=1)
+
+    errors = []
+    warnings = []
+    returndata = {}
+
+    table = 'voters'
+
+    # This table is required.
+    if table in data:
+        voters = data[table]
+
+        # We start at '2' because row 1 is the header row, previously verified.
+        # The data is in order in the ordered dict, so it represents row value.
+        for index, e in enumerate(voters, start=2):
+            # Verify all fields have appropriate values.
+            keys = get_sheet_keys(table, appdata['version'])
+            for key in keys:
+                # Any required key must have a value.
+                value = e.get(key, None)
+
+                if value is None:
+                    errors.append("Voters: Row %d: Missing value for column '%s'" % (index, key))
+                    continue
+
+                # Check type and range where appropriate.
+                if value is not None:
+                    if value in ['voted']:
+                        if not valid_true_false_value(value):
+                            errors.append("Voters: Row %d: Value for column '%s' must be %s" % (index, key, VALID_TRUE_FALSE_VALUES))
+
+        # Validate the data itself.
+        if len(errors) == 0:
+            namelist = []
+
+            # Verify the first and last names match the full name.
+            for v in voters:
+                fullname = v['fullname']
+                first, last = fullname.split(' ', 1)
+                if first != v['firstname']:
+                    errors.append("Voters: Row %d: First name '%s' does not match full name" % (index, v['firstname']))
+
+                if last != v['lastname']:
+                    errors.append("Voters: Row %d: Last name '%s' does not match full name" % (index, v['lastname']))
+
+            for v in voters:
+                namelist.append(v['fullname'])
+
+            for index, name in enumerate(namelist, start=2):
+                if namelist.count(name) > 1:
+                    errors.append("Voters: Row %d: Name '%s' is duplicated" % (index, name))
+
+    return errors, warnings, returndata
+
+
+def validateVotes(data, appdata):
+    errors = []
+    warnings = []
+    returndata = {}
+
+    table = 'votes'
+
+    # This table is not required.
+    if table in data:
+        votes = data[table]
+        current_user.logger.debug("Validating vote data", indent=1)
+
+        # We start at '2' because row 1 is the header row, previously verified.
+        # The data is in order in the ordered dict, so it represents row value.
+        for index, e in enumerate(votes, start=2):
+            # Verify all fields have appropriate values.
+            keys = get_sheet_keys(table, appdata['version'])
+            for key in keys:
+                required = True
+                if key in ['commentary']:
+                    required = False
+
+                # Any required key must have a value.
+                value = e.get(key, None)
+
+                if required is True and value is None:
+                    errors.append("Votes: Row %d: Missing value for column '%s'" % (index, key))
+                    continue
+
+                # Check type and range where appropriate.
+                if value is not None:
+                    if key in ['ballotid', 'itemid', 'answer']:
+                        try:
+                            value = int(value)
+
+                            # Class end entry IDs must be positive values.
+                            if key in ['ballotid', 'itemid', 'answer']:
+                                if value < 0:
+                                    errors.append("Votes: Row %d: Value for column '%s' is invalid (%d)" % (index, key, value))
+
+                        except:
+                            errors.append("Votes: Row %d: Value for column '%s' must be an integer" % (index, key))
+
+        # Validate the data itself.
+        if len(errors) == 0:
+            ballotitems = appdata['ballotitems']
+
+            for b in ballotitems:
+                ballotitem = ballotitems[b]
+                itemid = ballotitem['itemid']
+
+            counts = {}
+            for v in votes:
+                itemid = v['itemid']
+                ballotid = v['ballotid']
+
+                if itemid not in list(ballotitems.keys()):
+                    errors.append("Votes: Row %d: Ballot item ID %d is invalid" % (index, itemid))
+                else:
+                    answer = v['answer']
+                    itemtype = int(ballotitems[itemid]['type'])
+
+                    if itemtype == ITEM_TYPES.CONTEST.value:
+                        candidates = ballotitems[itemid]['candidates']
+                        if answer not in list(candidates.keys()):
+                            errors.append("Votes: Row %d: Answer '%s' does not match a candidate for contest ballot item %s" % (index, answer, itemid))
+
+                    elif itemtype == ITEM_TYPES.QUESTION.value:
+                        if answer is not None and int(answer) not in range(0, 2):
+                            errors.append("Votes: Row %d: Answer '%s' is invalid for question ballot item %s" % (index, answer, itemid))
+
+                if itemid not in counts:
+                    counts[itemid] = {}
+
+                if ballotid not in counts[itemid]:
+                    counts[itemid][ballotid] = 0
+
+                counts[itemid][ballotid] += 1
+
+            for b in ballotitems:
+                ballotitem = ballotitems[b]
+                itemid = ballotitem['itemid']
+                itemtype = int(ballotitem['type'])
+
+                if itemtype == ITEM_TYPES.CONTEST.value:
+                    positions = int(ballotitem['positions'])
+
+                    for ballotid in counts[itemid]:
+                        ballotcount = counts[itemid][ballotid]
+                        if ballotcount > positions:
+                            errors.append("Votes: Ballot Item %s has more votes (%d) than positions (%d)" % itemid, (c, positions))
+
+                elif itemtype == ITEM_TYPES.QUESTION.value:
+                    for ballotid in counts[itemid]:
+                        ballotcount = counts[itemid][ballotid]
+                        if ballotcount > 1:
+                            errors.append("Votes: Ballot Item %s has more votes (%d) than allowed for a question (%d)" % itemid, (c, 1))
+
+    return errors, warnings, returndata
+
+
 # Upconvert the imported data version to the current version.
 def convertImportedData(data, sheetversion):
     # We know the current data set is valid, because we validated it as it was for the imported version.
@@ -1190,8 +1576,12 @@ def importValidatedData(data, validationdata, user):
 
     # The bare minimum we need is event.
     event = data['events']
+    ballotitems = data['ballotitems']
+    candidates = data['candidates']
 
     # These others may or may not exist...
+    voters = data.get('voters', None)
+    votes = data.get('votes', None)
 
     # We need to either use or create these.
     vote_ballotid = data.get('vote_ballotid', None)
@@ -1258,6 +1648,64 @@ def importValidatedData(data, validationdata, user):
     log_import_item("event", "%d, %d, %s, %s, %s, %s" %
                     (imported_event.clubid, imported_event.eventid, imported_event.title, imported_event.icon, imported_event.homeimage, imported_event.eventdatetime))
 
+    current_user.logger.debug("Importing ballot items...", indent=1)
+    for b in ballotitems:
+        # Escape apostrophes.
+        name = b['name'].replace("'", "''").strip()
+        description = b['description'].replace("'", "''").strip()
+
+        # Add each ballot item.
+        outsql.append('''INSERT INTO ballotitems (clubid, eventid, itemid, type, name, description, positions, writeins)
+                         VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+                      ''' % (imported_event.clubid, imported_event.eventid,
+                             b['itemid'], b['type'], name, description, b['positions'], b['writeins']))
+
+        log_import_item("ballotitems", "%s" % ', '.join([b['itemid'], b['type'], name, description, b['positions'], b['writeins']]))
+
+    current_user.logger.debug("Importing candidate...", indent=1)
+    for c in candidates:
+        # Escape apostrophes.
+        firstname = c['firstname'].replace("'", "''").strip()
+        lastname = c['lastname'].replace("'", "''").strip()
+        fullname = c['fullname'].replace("'", "''").strip()
+
+        # Add each candidate.
+        outsql.append('''INSERT INTO candidates (clubid, eventid, id, itemid, firstname, lastname, fullname, writein)
+                         VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+                      ''' % (imported_event.clubid, imported_event.eventid,
+                             c['id'], c['itemid'], firstname, lastname, fullname, c['writein']))
+
+        log_import_item("candidates", "%s" % ', '.join([c['id'], c['itemid'], firstname, lastname, fullname, c['writein']]))
+
+    if voters is not None:
+        current_user.logger.debug("Importing voters...", indent=1)
+        for v in voters:
+            # Escape apostrophes.
+            firstname = v['firstname'].replace("'", "''").strip()
+            lastname = v['lastname'].replace("'", "''").strip()
+            fullname = v['fullname'].replace("'", "''").strip()
+
+            # Add each voter.
+            outsql.append('''INSERT INTO voters (clubid, eventid, firstname, lastname, fullname, voteid, voted)
+                            VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s')
+                        ''' % (imported_event.clubid, imported_event.eventid,
+                                firstname, lastname, fullname, v['voteid'], v['voted']))
+
+            log_import_item("voters", "%s" % ', '.join([firstname, lastname, fullname, v['voteid'], v['voted']]))
+
+    if votes is not None:
+        current_user.logger.debug("Importing votes...", indent=1)
+        for v in votes:
+            commentary = '' if (v['commentary'] in [None, 'None'] or len(v['commentary']) == 0) else '%s' % v['commentary']
+
+            # Add each vote.
+            outsql.append('''INSERT INTO votes (clubid, eventid, itemid, ballotid, answer, commentary)
+                            VALUES('%d', '%d', '%s', '%s', '%s', '%s')
+                        ''' % (imported_event.clubid, imported_event.eventid,
+                                v['itemid'], v['ballotid'], v['answer'], v['commentary']))
+
+            log_import_item("votes", "%s" % ', '.join([v['itemid'], v['ballotid'], v['answer'], commentary]))
+
     # ====================================
     # Ballot things.
     # These will exist because we either fetched them or rebuilt them.
@@ -1307,5 +1755,5 @@ def importValidatedData(data, validationdata, user):
     for attr in ['version', 'title', 'icon', 'homeimage', 'locked', 'eventdatetime']:
         setattr(current_user.event, attr, getattr(imported_event, attr))
 
-    # The club and event IDs are prevalidated to match, so they don't need to be reset.
+    # Success - no URL to return.
     return None

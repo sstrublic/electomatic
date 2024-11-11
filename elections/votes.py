@@ -301,11 +301,17 @@ def addVote(user, voterid=None, event=None, external=False):
                         failed = True
 
                 # If all the answers were retrieved successfully, add them to the database.
+                ballotid = 0
                 if failed is False:
                     # Add any new write-in candidates.
                     # The ID used was temporary and the database will generate the new ID.
                     eventlogger.info("Adding a vote: Saving votes")
 
+                    ballotid, err = current_user.event.get_vote_ballotid(current_user.get_userid())
+                    if err is not None:
+                        failed = True
+
+                if failed is False:
                     # Make all write-in candidates that are not selected 'not-new' so we don't
                     # try to add them to the database.
                     for itemid in candidates:
@@ -359,9 +365,9 @@ def addVote(user, voterid=None, event=None, external=False):
                     outsql = []
                     for a in answers:
                         for answer in answers[a]:
-                            outsql.append('''INSERT INTO votes (clubid, eventid, itemid, answer)
-                                            VALUES('%d', '%d', '%d', '%s');
-                                          ''' % (event.clubid, event.eventid, a, answer['answer']))
+                            outsql.append('''INSERT INTO votes (clubid, eventid, itemid, ballotid, answer)
+                                            VALUES('%d', '%d', '%d', '%d', '%s');
+                                          ''' % (event.clubid, event.eventid, a, ballotid, answer['answer']))
 
                     # Mark that this voter has voted.
                     outsql.append('''UPDATE voters
@@ -403,7 +409,7 @@ def addVote(user, voterid=None, event=None, external=False):
                     else:
                         return redirect(url_for('main_bp.index'))
 
-        return render_template('votes/addvote.html', user=user, admins=[ADMINS[event.clubid]],
+        return render_template('votes/addvote.html', user=user, admins=ADMINS[event.clubid],
                                 voter=voter, voterid=voterid, external=external,
                                 ballotitems=ballotitems, candidates=candidates, answers=answers,
                                 configdata=configdata)
@@ -486,7 +492,8 @@ def showResults(user):
 
         # Add the votes to the ballot item.
         for b in ballotitems:
-            ballotitems[b]['votes'] = votes[b]
+            if b in list(votes.keys()):
+                ballotitems[b]['votes'] = votes[b]
 
         current_user.logger.info("Show vote results: Operation completed")
 

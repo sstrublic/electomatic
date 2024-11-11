@@ -20,12 +20,12 @@
 
 <form action="" role="form" method="post" enctype="multipart/form-data">
     <!-- If the event is locked, then nothing can be done. -->
-    {% if configdata[13] == False %}
+    {% if configdata[12] == False %}
 
     <div>
         <br>
         <p><label>This operation will REPLACE the Event's content.</label></p>
-        <p><label>Class, Entry, Owner, and Vote data will be changed.</label></p>
+        <p><label>Ballot Item, Candidate, Voter, and Vote data will be changed.</label></p>
         <br>
         <p><label>THIS IS AN IRREVERSIBLE ACTION.</label></p>
         <br>

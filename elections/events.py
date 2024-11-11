@@ -207,11 +207,11 @@ class EventConfig:
 
             outsql.append('''INSERT INTO events (locked, title, icon, homeimage, eventdatetime,
                                                 clubid, eventid)
-                            VALUES (%s, '%s', '%s', '%s', '%s', %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);
+                            VALUES (%s, '%s', '%s', '%s', '%s', '%d', '%d');
                         ''' % (self.locked, self.title, self.icon, self.homeimage, self.eventdatetime,
                                self.clubid, self.eventid))
             outsql.append('''INSERT INTO vote_ballotid
-                            VALUES(%d, %d, 0);
+                            VALUES('%d', '%d', 0);
                         ''' % (self.clubid, self.eventid))
 
             _, _, err = db.sql(outsql, handlekey=user)
@@ -428,12 +428,25 @@ def remove_event_data(user, clubid, eventid, clear_config=True, votes_only=False
             current_user.logger.debug("Skipping removal of event config data", indent=2)
             sheets.pop(sheets.index('events'))
 
-        # If only removing votes, keep the non-voting sheettables.
+        # If only removing votes, keep the non-voting sheet tables.
         if votes_only is True:
             current_user.logger.debug("Skipping removal of event entry data", indent=2)
-            for sheet in ['events']:
+            for sheet in ['events', 'ballotitems', 'candidates', 'voters']:
                 if sheet in sheets:
                     sheets.pop(sheets.index(sheet))
+
+            # Remove any write-in candidates.
+            current_user.logger.info("Remmoving write-in candidates", indent=2)
+            outsql.append('''DELETE FROM candidates
+                            WHERE clubid='%d' AND eventid='%d' AND writein=True;
+                            ''' % (clubid, eventid))
+
+            # Reset any 'voted' flags.
+            current_user.logger.info("Clearing voter voted flags", indent=2)
+            outsql.append('''UPDATE voters
+                             SET voted=False
+                             WHERE clubid='%d' AND eventid='%d';
+                            ''' % (clubid, eventid))
 
         # Remove all data from the tables to be cleared.
         for table in sheets:
@@ -444,6 +457,7 @@ def remove_event_data(user, clubid, eventid, clear_config=True, votes_only=False
         # If not clearing the config, we are resetting the event (not removing it) and as such need an initial vote ballot id.
         if clear_config is False:
             # Add the initial vote ballot ID of 0.
+            current_user.logger.debug("Resetting ballot ID", indent=2)
             outsql.append('''INSERT INTO vote_ballotid
                             VALUES(%d, %d, 0);
                         ''' % (clubid, eventid))

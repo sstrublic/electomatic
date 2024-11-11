@@ -235,6 +235,10 @@ event locked = configdata[12]
                 <li class="menuitem"><a href="{{ url_for('main_bp.showuser') }}">View User</a></li>
                 <li class="menuitem"><a href="{{ url_for('main_bp.showusers') }}">View Users</a></li>
 
+                {% else %}
+                <!-- in multi-tenancy mode, admins can reset passowrd. -->
+                <li class="menuitem"><a href="{{ url_for('main_bp.resetpassword') }}">Reset Password</a></li>
+
                 {% endif %}
               </ul>
             </li>
@@ -260,7 +264,6 @@ event locked = configdata[12]
             {% endif %}
 
           </ul>
-
         </li>
       </ul>
 

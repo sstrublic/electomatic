@@ -121,6 +121,7 @@ CREATE TABLE ballotitems (
     description VARCHAR NOT NULL,
     positions INTEGER NOT NULL DEFAULT 1,
     writeins BOOLEAN NOT NULL DEFAULT false,
+    ballotid INTEGER NOT NULL,
     UNIQUE(clubid, eventid, itemid),
     UNIQUE(clubid, eventid, name)
 );
@@ -167,6 +168,7 @@ CREATE TABLE votes (
     clubid INTEGER NOT NULL DEFAULT 0,
     eventid INTEGER NOT NULL DEFAULT 0,
     itemid INTEGER NOT NULL,
+    ballotid INTEGER NOT NULL,
     answer INTEGER NOT NULL,
     commentary VARCHAR
 );
