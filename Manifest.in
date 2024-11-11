@@ -5,7 +5,7 @@ include README.txt
 include config.py
 include serve.py
 
-include ballotomatic.service
+include electomatic.service
 include postgresql-install
 include upgradedb.py
 
@@ -15,5 +15,3 @@ recursive-include schema *
 
 recursive-include source/templates *
 recursive-include source/static *
-
-recursive-include docs *.pdf

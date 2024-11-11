@@ -199,11 +199,6 @@ def buildExportFile(user, fetchresults=False):
                          WHERE clubid='%d' AND eventid='%d';
                       ''' % (event.clubid, event.eventid))
 
-        outsql.append('''SELECT *
-                         FROM vote_ballotid
-                         WHERE clubid='%d' AND eventid='%d';
-                      ''' % (event.clubid, event.eventid))
-
         # Fetch ballot item data.
         outsql.append('''SELECT *
                          FROM ballotitems
@@ -231,6 +226,11 @@ def buildExportFile(user, fetchresults=False):
                          FROM votes
                          WHERE clubid='%d' AND eventid='%d'
                          ORDER BY id ASC;
+                      ''' % (event.clubid, event.eventid))
+
+        outsql.append('''SELECT *
+                         FROM vote_ballotid
+                         WHERE clubid='%d' AND eventid='%d';
                       ''' % (event.clubid, event.eventid))
 
         if fetchresults is True:
