@@ -18,24 +18,33 @@
 
     <!--  Remove the margin for headers, since this page doesn't have any. -->
     <div class="main-page">
-        {% if not (user in admins) %}
-        <div style="padding-top: 125px;"></div>
         <div class="main-page-card">
+            <div class="main-page-row">
+                <a href="{{ url_for('main_bp.showitems') }}"><button class="main-page-common-button" title="View the Event's Ballot Items.">View Ballot Items</button></a>
+                <a href="{{ url_for('main_bp.showvoters') }}"><button class="main-page-common-button" title="View the Event's Voters.">View Voters</button></a>
+            </div>
         </div>
-        {% else %}
-
-        <div class="main-page-card">
-        </div>
-        {% endif %}
 
         {% if user != None and user in admins and (configdata[12] == 0) %}
-        <div class="main-page-row">
-            <div class="main-page-column">
-            <div class="main-page-card">
+        <div class="main-page-card">
+            <div class="main-page-row">
+                <a href="{{ url_for('main_bp.addcandidate') }}"><button class="main-page-common-button" title="View the Event's Ballot Items.">Add Candidate</button></a>
+                <a href="{{ url_for('main_bp.addvoter') }}"><button class="main-page-common-button" title="View the Event's Ballot Items.">Add Voter</button></a>
             </div>
+        </div>
+
+        <div class="main-page-card">
+            <div class="main-page-row">
+                <a href="{{ url_for('main_bp.addvote') }}"><button class="main-page-common-button" title="View the Event's Ballot Items.">Add Vote</button></a>
             </div>
         </div>
         {% endif %}
+
+        <div class="main-page-card">
+            <div class="main-page-row">
+                <a href="{{ url_for('main_bp.showresults') }}"><button class="main-page-common-button" title="View the Event's Ballot Items.">View Results</button></a>
+            </div>
+        </div>
 
     </div>
 
