@@ -20,6 +20,7 @@ from elections import ADMINS
 import elections.events as events
 from elections.events import EventConfig
 from elections.ballotitems import ITEM_TYPES
+from elections.clubs import isValidEmail
 
 from flask import redirect, render_template, url_for, request, session
 from flask_login import current_user
@@ -51,7 +52,7 @@ ALL_SHEETS = [ [],
 SHEET_KEYS = {"events":               ['property', 'value'],
               "ballotitems":          ['itemid', 'type', 'name', 'description', 'positions', 'writeins'],
               "candidates":           ['id', 'itemid', 'firstname', 'lastname', 'fullname', 'writein'],
-              "voters":               ['firstname', 'lastname', 'fullname', 'voteid', 'voted'],
+              "voters":               ['firstname', 'lastname', 'fullname', 'email', 'voteid', 'voted'],
               "votes":                ['itemid', 'ballotid', 'answer', 'commentary'],
               "vote_ballotid":        ['ballotid'],
              }
@@ -1427,6 +1428,7 @@ def validateVoters(data, appdata):
 
             # Verify the first and last names match the full name.
             for v in voters:
+                email = v['email']
                 fullname = v['fullname']
                 first, last = fullname.split(' ', 1)
                 if first != v['firstname']:
@@ -1434,6 +1436,10 @@ def validateVoters(data, appdata):
 
                 if last != v['lastname']:
                     errors.append("Voters: Row %d: Last name '%s' does not match full name" % (index, v['lastname']))
+
+                # If an email address is specified, require a standard format.
+                if not isValidEmail(email):
+                    errors.append("Voters: Row %d: Email address '%s' is not in a standard format" % (index, email))
 
             for v in voters:
                 namelist.append(v['fullname'])
@@ -1686,12 +1692,12 @@ def importValidatedData(data, validationdata, user):
             fullname = v['fullname'].replace("'", "''").strip()
 
             # Add each voter.
-            outsql.append('''INSERT INTO voters (clubid, eventid, firstname, lastname, fullname, voteid, voted)
-                            VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s')
+            outsql.append('''INSERT INTO voters (clubid, eventid, firstname, lastname, fullname, email, voteid, voted)
+                            VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
                         ''' % (imported_event.clubid, imported_event.eventid,
-                                firstname, lastname, fullname, v['voteid'], v['voted']))
+                                firstname, lastname, fullname, v['email'], v['voteid'], v['voted']))
 
-            log_import_item("voters", "%s" % ', '.join([firstname, lastname, fullname, v['voteid'], v['voted']]))
+            log_import_item("voters", "%s" % ', '.join([firstname, lastname, fullname, v['email'], v['voteid'], v['voted']]))
 
     if votes is not None:
         current_user.logger.debug("Importing votes...", indent=1)

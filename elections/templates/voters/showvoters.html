@@ -46,6 +46,7 @@
             <thead>
             <tr>
                 <th class="table-voters-name">Name</th>
+                <th class="table-voters-name">Email</th>
                 <th class="table-voters-voteid">Vote ID</th>
                 <th class="table-voters-voted">Voted</th>
                 <th class="voters-action" colspan="2">Actions</th>
@@ -56,6 +57,7 @@
             {% for v in voterdata %}
                 <tr>
                     <td class="table-voters-name" title="The voter's name.">{{v['fullname']}}</td>
+                    <td class="table-voters-name" title="The voter's name.">{{v['email']}}</td>
                     <td class="table-voters-voteid" title="The voter's Vote ID.">{{v['voteid']}}</td>
                     <td class="table-voters-voted"><input title="Tis voter has voted in this Event." type="checkbox"{% if v['voted'] == True %} checked {% endif %} disabled></td>
                     <td class="voters-action"><button type="submit" id="edit_{{v['id']}}" name="edit_{{v['id']}}" value="{{v['id']}}">Edit</td>

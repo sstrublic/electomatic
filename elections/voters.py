@@ -13,6 +13,7 @@ from flask_login import current_user
 
 from elections import db, app
 from elections import ADMINS
+from elections.clubs import isValidEmail
 
 # Show voters.
 def showVoters(user):
@@ -80,7 +81,8 @@ def addVoter(user):
 
         # Entry fields.
         entryfields = {'firstname': {"text": "First Name", "value": None},
-                       'lastname': {"text": "Last Name", "value": None}
+                       'lastname': {"text": "Last Name", "value": None},
+                       'email': {"text": "Email Address", "value": None}
                     }
 
         # Check if the event is locked.
@@ -124,6 +126,12 @@ def addVoter(user):
                         failed = True
 
                 if failed is False:
+                    # If an email address is specified, require a standard format.
+                    if not isValidEmail(entryfields['email']['value']):
+                        current_user.logger.flashlog("Add Voter failure", "Email address is not in a standard format.")
+                        failed = True
+
+                if failed is False:
                     fullname = '%s %s' % (entryfields['firstname']['value'], entryfields['lastname']['value'])
 
                     # Verify there are no voters with the same name.
@@ -154,10 +162,10 @@ def addVoter(user):
                             unique = True
 
                     # Add the voter.
-                    outsql = '''INSERT INTO voters(clubid, eventid, firstname, lastname, fullname, voteid, voted)
-                                VALUES('%d', '%d', '%s', '%s', '%s', '%s', False);
+                    outsql = '''INSERT INTO voters(clubid, eventid, firstname, lastname, fullname, email, voteid, voted)
+                                VALUES('%d', '%d', '%s', '%s', '%s', '%s', '%s', False);
                                 ''' % (current_user.event.clubid, current_user.event.eventid,
-                                    entryfields['firstname']['value'], entryfields['lastname']['value'], fullname, voteid)
+                                    entryfields['firstname']['value'], entryfields['lastname']['value'], fullname, entryfields['email']['value'], voteid)
                     _, _, err = db.sql(outsql, handlekey=current_user.get_userid())
 
                     # On error to update the database, return and print out the error (like "System is in read only mode").
@@ -166,6 +174,7 @@ def addVoter(user):
 
                     current_user.logger.flashlog(None, "New Voter saved:", 'info', propagate=True)
                     current_user.logger.flashlog(None, "Name: %s" % fullname, 'info', highlight=False, indent=True, propagate=True)
+                    current_user.logger.flashlog(None, "Email Address: %s" % entryfields['email']['value'], 'info', highlight=False, indent=True, propagate=True)
                     current_user.logger.flashlog(None, "Voter ID: %s" % voteid, 'info', highlight=False, indent=True, propagate=True)
 
                     current_user.logger.info("Add voter: Operation completed")
@@ -173,6 +182,7 @@ def addVoter(user):
 
         return render_template('voters/addvoter.html', user=user, admins=ADMINS[current_user.event.clubid],
                                 firstname=entryfields['firstname']['value'], lastname=entryfields['lastname']['value'],
+                                email=entryfields['email']['value'],
                                 configdata=current_user.get_render_data())
 
     except Exception as e:
@@ -237,7 +247,8 @@ def editVoter(user):
 
             # Entry fields.
             entryfields = {'firstname': {"text": "First Name", "value": None},
-                            'lastname': {"text": "Last Name", "value": None}
+                            'lastname': {"text": "Last Name", "value": None},
+                            'email': {"text": "Email Address", "value": None}
                         }
 
             # Fetch field data.
@@ -258,6 +269,12 @@ def editVoter(user):
             for field in entryfields:
                 if type(entryfields[field]['value']) is str and len(entryfields[field]['value']) == 0:
                     current_user.logger.flashlog("Edit voter failure", "Field '%s' cannot be empty." % entryfields[field]['text'])
+                    failed = True
+
+            if failed is False:
+                # If an email address is specified, require a standard format.
+                if not isValidEmail(entryfields['email']['value']):
+                    current_user.logger.flashlog("Add Voter failure", "Email address is not in a standard format.")
                     failed = True
 
             if failed is False:
@@ -291,9 +308,10 @@ def editVoter(user):
                         outsql = '''UPDATE voters
                                     SET firstname='%s',
                                         lastname='%s',
-                                        fullname='%s'
+                                        fullname='%s',
+                                        email='%s'
                                     WHERE clubid='%d' AND eventid='%d' AND id='%d';
-                                ''' % (entryfields['firstname']['value'], entryfields['lastname']['value'], fullname,
+                                ''' % (entryfields['firstname']['value'], entryfields['lastname']['value'], fullname, entryfields['email']['value'],
                                         current_user.event.clubid, current_user.event.eventid, voter['id'])
                         _, _, err = db.sql(outsql, handlekey=current_user.get_userid())
 
@@ -303,6 +321,7 @@ def editVoter(user):
                         else:
                             current_user.logger.flashlog(None, "Updated Voter:", 'info', propagate=True)
                             current_user.logger.flashlog(None, "New Name: %s" % fullname, 'info', highlight=False, indent=True, propagate=True)
+                            current_user.logger.flashlog(None, "Email Address: %s" % entryfields['email']['value'], 'info', highlight=False, indent=True, propagate=True)
 
                             current_user.logger.info("Edit voter: Operation completed")
                             return redirect(url_for('main_bp.showvoters'))
