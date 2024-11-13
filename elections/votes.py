@@ -307,7 +307,7 @@ def addVote(user, voterid=None, event=None, external=False):
                     # The ID used was temporary and the database will generate the new ID.
                     eventlogger.info("Adding a vote: Saving votes")
 
-                    ballotid, err = current_user.event.get_vote_ballotid(current_user.get_userid())
+                    ballotid, err = event.get_vote_ballotid(user)
                     if err is not None:
                         failed = True
 
