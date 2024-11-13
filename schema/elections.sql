@@ -121,7 +121,6 @@ CREATE TABLE ballotitems (
     description VARCHAR NOT NULL,
     positions INTEGER NOT NULL DEFAULT 1,
     writeins BOOLEAN NOT NULL DEFAULT false,
-    ballotid INTEGER NOT NULL,
     UNIQUE(clubid, eventid, itemid),
     UNIQUE(clubid, eventid, name)
 );

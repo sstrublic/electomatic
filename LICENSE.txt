@@ -1,0 +1,3 @@
+This Application (The Ballot-O-Matic) and any associated files are the
+property of the Author (Steve Strublic) and are not open for modification
+or distribution without express permission of the Author.

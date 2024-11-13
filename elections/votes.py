@@ -181,7 +181,7 @@ def addVote(user, voterid=None, event=None, external=False):
             outsql.append('''SELECT *
                              FROM candidates
                              WHERE clubid='%d' AND eventid='%d' AND writein=False
-                             ORDER by itemid ASC;
+                             ORDER by itemid ASC, lastname ASC;
                           ''' % (event.clubid, event.eventid))
 
             _, data, _ = db.sql(outsql, handlekey=handlekey)

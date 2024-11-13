@@ -91,22 +91,17 @@
 
         <!-- If the event is locked, then nothing can be done. -->
         {% if configdata[12] == False %}
-
         {% if user != None and user in admins %}
         <div align="center" style="padding:20px;">
             <button type="submit" id="redirect" name="redirect" value="additem" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Ballot Item</button>
+            <button type="submit" id="redirect" name="redirect" value="addcandidate" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Add Candidate</button>
         </div>
-        <br>
+        {% endif %}
         {% endif %}
 
-        {% endif %}
-
-        {% if user != None and user not in admins %}
-        <div align="center" style="padding:20px;">
-            <button type="submit" id="redirect" name="redirect" value="index" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">Home</button>
+        <div align="center" style="padding-bottom:20px;">
+            <button type="submit" id="redirect" name="redirect" value="showcandidates" class="w3-button w3-border w3-border-gray w3-padding-large w3-white pagebutton">View Candidates</button>
         </div>
-        <br>
-        {% endif %}
 
     </div>
 

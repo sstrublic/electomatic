@@ -9,9 +9,9 @@ include electomatic.service
 include postgresql-install
 include upgradedb.py
 
-include source/exports/event_data_template.xlsx
+include elections/exports/event_data_template.xlsx
 
 recursive-include schema *
 
-recursive-include source/templates *
-recursive-include source/static *
+recursive-include elections/templates *
+recursive-include elections/static *

@@ -293,3 +293,27 @@ function auto_grow(element) {
   element.style.height = "5px";
   element.style.height = (element.scrollHeight + 20) + "px";
 }
+
+/* Show the event ID selection for users. */
+function showEventID() {
+  /* Get the content of the user type field. */
+  var usertype = document.getElementById('usertype').value
+
+  /* User types show the 'event id' field. */
+  if (usertype == 'Public') {
+    document.getElementById('eventidlabel').hidden = false;
+    document.getElementById('eventid').hidden = false;
+  } else {
+    document.getElementById('eventidlabel').hidden = true;
+    document.getElementById('eventid').hidden = true;
+  }
+
+  /* Admin types show the 'club admin' field. */
+  if (usertype == 'Admin') {
+    document.getElementById('clubadminlabel').hidden = false;
+    document.getElementById('clubadmin').hidden = false;
+  } else {
+    document.getElementById('clubadminlabel').hidden = true;
+    document.getElementById('clubadmin').hidden = true;
+  }
+}

@@ -20,7 +20,7 @@ def fetchDocs(user):
         event = current_user.event
         current_user.logger.info("Displaying: Fetch documents")
 
-        filename = 'ballotomatic_docs_%s.zip' % app.config.get('VERSION')
+        filename = 'electomatic_docs_%s.zip' % app.config.get('VERSION')
         filepath = url_for('main_bp.exportfile', filename=filename)
 
         # Create the Zip file for documents.

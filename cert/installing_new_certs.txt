@@ -1,0 +1,13 @@
+To install an SSL certificate chain:
+
+1. At the time the cert is generated, you will be prompted to download
+   the private key.  DOWNLOAD THE KEY.  You may have to reissue the cert
+   if you don't do this.
+2. Download the SSL certificate and intermediate certificate.
+3. Log into the server and stop nginx and ballotmatic services.
+4. Copy the certificates to the server at /apps/cert.
+5. Concatenate the SLL certificate and intermediate certificate:
+   cat ballotomatic.com_ssl_certificate.cer _.ballotomatic.com_ssl_certificate_INTERMEDIATE.cer > ballotomatic-chained.crt
+6. Copy the private key file to ballotomatic.key.
+7. Restart nginx and ballotomatic services.
+8. Verify the services started and log in to ballotomatic.com to verify the connection is encrypted.

@@ -12,7 +12,7 @@ try:
     configdata = config.Config()
 
     manifest = 'Manifest.in'
-    filename = 'ballotomatic'
+    filename = 'electomatic'
 
     # Read the version and package from the config.
     version = configdata.VERSION
@@ -79,7 +79,7 @@ try:
                 sys.exit(1)
 
         # Build the ZIP file, using the version we read from the config.
-        # The content will be in the 'ballotomatic' directory.
+        # The content will be in the 'electomatic' directory.
         distdir = 'dist'
 
         outdir = filename
