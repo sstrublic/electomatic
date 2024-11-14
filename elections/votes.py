@@ -220,6 +220,7 @@ def addVote(user, voterid=None, event=None, external=False):
 
             # If saving the information, set this for later.
             saving = False
+            answers = {}
 
             result = request.values.get('savebutton')
             if result is not None:
@@ -227,17 +228,52 @@ def addVote(user, voterid=None, event=None, external=False):
                     eventlogger.debug("Adding a vote: Saving changes requested", indent=1)
                     saving = True
                 else:
-                    eventlogger.flashlog(None, "Vote canceled.", 'info')
+                    # Fetch the data but no validation is performed.
+                    for b in ballotitems:
+                        itemid = b['itemid']
 
-                    if external is True:
-                        return render_template('votes/vote.html', user=user, admins=ADMINS[event.clubid],
-                                                success=False, voterid=None, fullname=None, configdata=configdata)
-                    else:
-                        return redirect(url_for('main_bp.addvote'))
+                        if ITEM_TYPES.CONTEST.value == b['type']:
+                            for c in candidates[itemid]:
+                                candidateid = str(c['id'])
+
+                                answer = request.values.get('contest_%d_%s' % (itemid, candidateid), None)
+                                if answer is not None:
+                                    # The candidate was selected.
+                                    c['selected'] = True
+
+                                    # Fetch the name for write-in candidates.
+                                    if c['new'] is True:
+                                        name = request.values.get('writein_%d_%s' % (itemid, candidateid), None)
+                                        if name is not None and len(name) > 0:
+                                            c['firstname'], c['lastname'] = name.split(' ', 1)
+                                            c['fullname'] = name
+
+                                            vote = { 'type': b['type'],
+                                                    'item': b['name'],
+                                                    'candidate': c['fullname'],
+                                                    'writein': c['new'],
+                                                    'answer': candidateid,
+                                                }
+
+                                            if itemid not in answers:
+                                                answers[itemid] = [vote]
+                                            else:
+                                                answers[itemid].append(vote)
+
+                        elif ITEM_TYPES.QUESTION.value == b['type']:
+                            answer = request.values.get('question_%s' % itemid, None)
+
+                            # The answer may be empty (no vote).
+                            if answer is not None:
+                                result = True if answer == 'Yes' else False
+                                vote = { 'type': b['type'],
+                                        'item': b['name'],
+                                        'answer': '1' if True == result else '0'
+                                    }
+                                answers[itemid] = [vote]
 
             if saving is True:
                 # Walk through the ballot items and extract the results.
-                answers = {}
                 failed = False
                 error = False
 
