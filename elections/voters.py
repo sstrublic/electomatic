@@ -236,7 +236,7 @@ def editVoter(user):
         voter = voter[0]
         if voter['voted'] is True:
             current_user.logger.flashlog("Edit voter failure", "Voter '%s' has already voted and cannot be changed." % voter['fullname'])
-            return redirect(url_for('main_bp.editvoter'))
+            return redirect(url_for('main_bp.showvoters'))
 
         saving = False
         if request.values.get('savebutton'):
@@ -400,7 +400,7 @@ def removeVoter(user):
         voter = voter[0]
         if voter['voted'] is True:
             current_user.logger.flashlog("Edit voter failure", "Voter '%s' has already voted and cannot be changed." % voter['fullname'])
-            return redirect(url_for('main_bp.editvoter'))
+            return redirect(url_for('main_bp.showvoters'))
 
         # The process is:
         # - Initiate via 'Submit'
