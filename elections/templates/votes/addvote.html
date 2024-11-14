@@ -129,9 +129,7 @@
 
     <!-- Cancel the transaction. -->
     <div style="padding:10px;">
-        <button type="submit" id="confirm" name="confirm" value="confirm" value="confirm" \
-                onclick="enableSubmit(event);" onfocus="setSubmitState(false);">Confirm Entries</button>
-        <button type="submit" id="savebutton" name="savebutton" value="save" disabled style="pointer-events: none;">Submit</button>
+        <button type="submit" id="savebutton" name="savebutton" value="save" onclick="confirmSelections(this);">Submit</button>
         <button type="submit" id="cancelbutton" name="cancelbutton" value="cancel">Cancel</button>
     </div>
     {% endif %}

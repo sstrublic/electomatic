@@ -317,3 +317,11 @@ function showEventID() {
     document.getElementById('clubadmin').hidden = true;
   }
 }
+
+function confirmSelections(element) {
+  if (confirm("Save your vote selection?")) {
+    element.value = "save";
+  } else {
+    element.value = "cancel";
+  }
+}

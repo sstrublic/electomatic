@@ -220,9 +220,20 @@ def addVote(user, voterid=None, event=None, external=False):
 
             # If saving the information, set this for later.
             saving = False
-            if request.values.get('savebutton'):
-                eventlogger.debug("Adding a vote: Saving changes requested", indent=1)
-                saving = True
+
+            result = request.values.get('savebutton')
+            if result is not None:
+                if result == 'save':
+                    eventlogger.debug("Adding a vote: Saving changes requested", indent=1)
+                    saving = True
+                else:
+                    eventlogger.flashlog(None, "Vote canceled.", 'info')
+
+                    if external is True:
+                        return render_template('votes/vote.html', user=user, admins=ADMINS[event.clubid],
+                                                success=False, voterid=None, fullname=None, configdata=configdata)
+                    else:
+                        return redirect(url_for('main_bp.addvote'))
 
             if saving is True:
                 # Walk through the ballot items and extract the results.
