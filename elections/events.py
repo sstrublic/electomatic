@@ -825,9 +825,13 @@ def addEvent(user):
                 eventid = int('%d1' % clubid)
                 current_user.logger.debug("Adding an event: No events, so event ID = %d" % eventid, indent=1)
             else:
-                eventid = int(maxid)
-                current_user.logger.debug("Adding an event: Found event ID %d, so event ID = %d" % (eventid, eventid + 1), indent=1)
-                eventid = eventid + 1
+                # When events reach xxxx9, they need to roll to xxxx10, and xxxx99 to xxxx100, etc.
+                # We do this by removing the club ID from the event ID, incrementing the remaining value,
+                # and then appending it to the club ID.
+                maxidstr = str(maxid)
+                eventno = int(maxidstr.replace('%s' % clubid, '')) + 1
+                eventid = int('%d%d' % (clubid, eventno))
+                current_user.logger.debug("Adding an event: Found event ID %d, so event ID = %d" % (maxid, eventid), indent=1)
 
             # Add the event to the database with an initial vate_ballotid value of 1.
             current_user.logger.info("Adding an event: Saving event '%s'" % title, indent=1)
