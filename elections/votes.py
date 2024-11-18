@@ -29,7 +29,17 @@ def publicVote():
 
     # Fetch the voter ID.
     voterid = request.values.get('voterid', None)
+
+    if voterid is not None and len(voterid) == 0:
+        logger.flashlog("Public vote failure", "Please enter a Voter ID.")
+        return render_template('votes/vote.html', voterid=None, configdata=configdata)
+
     if voterid is not None:
+        try:
+            int(voterid)
+        except:
+            logger.flashlog("Public vote failure", "Voter ID must be numeric.")
+            return render_template('votes/vote.html', voterid=None, configdata=configdata)
 
         # Verify the voter Id.
         outsql = '''SELECT *
@@ -39,7 +49,7 @@ def publicVote():
         _, data, _ = db.sql(outsql, handlekey='system')
 
         if data is None or len(data[0]) == 0:
-            logger.flashlog("Public vote failure", "Vote ID '%s' was not found." % voterid)
+            logger.flashlog("Public vote failure", "Voter ID '%s' was not found." % voterid)
             return render_template('votes/vote.html', voterid=None, configdata=configdata)
 
         # We found them -
@@ -142,6 +152,30 @@ def addVote(user, voterid=None, event=None, external=False):
         if voterid is None:
             voterid = request.values.get('voterid', None)
 
+        if voterid is not None and len(voterid) == 0:
+            err = "Please enter a Voter ID."
+
+            if external is True:
+                eventlogger.flashlog("Add vote failure", err)
+                return render_template('votes/vote.html', user=user, admins=ADMINS[event.clubid],
+                                        success=False, voterid=None, fullname=None, configdata=configdata)
+            else:
+                return return_err(err, 'main_bp.addvote')
+
+        # Voter ID must be interger.
+        if voterid is not None:
+            try:
+                int(voterid)
+            except:
+                err = "Voter ID must be numeric."
+
+                if external is True:
+                    eventlogger.flashlog("Add vote failure", err)
+                    return render_template('votes/vote.html', user=user, admins=ADMINS[event.clubid],
+                                            success=False, voterid=None, fullname=None, configdata=configdata)
+                else:
+                    return return_err(err, 'main_bp.addvote')
+
         voter = None
         ballotitems = None
         candidates = None
@@ -158,7 +192,7 @@ def addVote(user, voterid=None, event=None, external=False):
             _, data, _ = db.sql(outsql, handlekey=handlekey)
 
             if data is None or len(data[0]) == 0:
-                return return_err("Vote ID '%s' was not found." % voterid, 'main_bp.addvote')
+                return return_err("Voter ID '%s' was not found." % voterid, 'main_bp.addvote')
 
             # Get the voter revord.
             voter = data[0][0]

@@ -22,7 +22,7 @@ class Config:
     PACKAGE = 'elections'
 
     # Version
-    VERSION = '1.0.0'
+    VERSION = '1.0.1'
 
     # Multi-tenancy.
     MULTI_TENANCY = True
